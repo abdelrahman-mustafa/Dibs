@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -22,4 +24,20 @@ func IsAdmin(id string) bool {
 		return false
 	}
 	return true
+}
+
+//IsAdminExist ... validates the username is for admin
+func IsAdminExist(username string) (bool, string, bson.ObjectId, string) {
+
+	fmt.Println("Start find the admin", username)
+	session := GetSession()
+	admin := Admin{}
+	error := session.DB("dibs").C("admins").Find(bson.M{"username": username}).One(&admin)
+	fmt.Println("Admin is found ", admin)
+	fmt.Println("Start find the Admin", admin.Username)
+	if error != nil {
+		return false, "", "", ""
+	}
+
+	return true, admin.Password, admin.ID, admin.Role
 }
