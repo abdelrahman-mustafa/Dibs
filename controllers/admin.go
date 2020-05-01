@@ -28,6 +28,13 @@ type (
 	}
 )
 
+//SetupResponse ...
+func SetupResponse(w *http.ResponseWriter, req *http.Request) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+}
+
 // NewAdminController ... returns a instance of UserController structure
 func NewAdminController(s *mgo.Session) *AdminController {
 	return &AdminController{s}
@@ -44,7 +51,7 @@ func (ad AdminController) CreateAdmin(w http.ResponseWriter, r *http.Request, p 
 	// 	w.WriteHeader(404)
 	// 	w.Write([]byte("Missing token"))
 	// } else {
-
+	SetupResponse(&w, r)
 	admin := models.Admin{}
 	//prase json  of body and attach to admoin struct
 	json.NewDecoder(r.Body).Decode(&admin)
@@ -69,6 +76,7 @@ func (ad AdminController) Signin(w http.ResponseWriter, r *http.Request, p httpr
 	fmt.Println("Start Sign in")
 	signIn := SignIn{}
 	json.NewDecoder(r.Body).Decode(&signIn)
+	SetupResponse(&w, r)
 
 	isAdmin, password, id, role := models.IsAdminExist(signIn.Username)
 	if isAdmin != true {

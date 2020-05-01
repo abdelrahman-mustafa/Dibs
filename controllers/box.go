@@ -31,6 +31,7 @@ func (ad BoxController) CreateBox(w http.ResponseWriter, r *http.Request, p http
 	Box := models.Box{}
 	//prase json  of body and attach to admoin struct
 	json.NewDecoder(r.Body).Decode(&Box)
+	SetupResponse(&w, r)
 
 	//create id
 	Box.ID = bson.NewObjectId()
@@ -51,6 +52,7 @@ func (ad BoxController) CreateBox(w http.ResponseWriter, r *http.Request, p http
 func (ad BoxController) UpdateBox(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 	// validate id and return the object of id
+	SetupResponse(&w, r)
 
 	// edit  the new changes in the object
 	// update the doc in DB

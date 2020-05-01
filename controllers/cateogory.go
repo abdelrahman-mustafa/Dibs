@@ -27,6 +27,7 @@ func NewCatController(s *mgo.Session) *CatController {
 
 // CreateCat ... creates a new Cat resource
 func (ad CatController) CreateCat(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	SetupResponse(&w, r)
 
 	Cat := models.Cateogory{}
 	//prase json  of body and attach to admoin struct
