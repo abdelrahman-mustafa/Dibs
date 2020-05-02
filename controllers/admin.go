@@ -76,7 +76,6 @@ func (ad AdminController) Signin(w http.ResponseWriter, r *http.Request, p httpr
 	fmt.Println("Start Sign in")
 	signIn := SignIn{}
 	json.NewDecoder(r.Body).Decode(&signIn)
-	SetupResponse(&w, r)
 
 	isAdmin, password, id, role := models.IsAdminExist(signIn.Username)
 	if isAdmin != true {
@@ -115,16 +114,16 @@ func (ad AdminController) Signin(w http.ResponseWriter, r *http.Request, p httpr
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(404)
 			w.Write([]byte("Not Authorized"))
+		} else {
+			token := helpers.GenerateToken(id, role)
+			Res := SignInResponse{}
+			Res.ID = id
+			Res.Token = token
+			output, _ := json.Marshal(Res)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(201)
+			fmt.Fprintf(w, "%s", output)
+
 		}
-		token := helpers.GenerateToken(id, role)
-		Res := SignInResponse{}
-		Res.ID = id
-		Res.Token = token
-		output, _ := json.Marshal(Res)
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(201)
-		fmt.Fprintf(w, "%s", output)
-
 	}
-
 }
