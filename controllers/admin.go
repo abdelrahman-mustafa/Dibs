@@ -86,23 +86,30 @@ func (ad AdminController) Signin(w http.ResponseWriter, r *http.Request, p httpr
 			admin.Username = signIn.Username
 			admin.Password = signIn.Password
 			admin.Role = "admin"
+			encryptedPassword, er := helpers.Encrypt(admin.Password)
 
-			//create id
-			admin.ID = bson.NewObjectId()
+			if er != nil {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(400)
+				fmt.Fprintf(w, "%s", "Something went wrong")
+			} else {
+				//create id
+				admin.ID = bson.NewObjectId()
+				admin.Password = encryptedPassword
+				// write struct of admin to DB
+				ad.session.DB("dibs").C("admins").Insert(admin)
 
-			// write struct of admin to DB
-			ad.session.DB("dibs").C("admins").Insert(admin)
+				token := helpers.GenerateToken(admin.ID, admin.Role)
+				fmt.Println("Token Generated is", token)
 
-			token := helpers.GenerateToken(admin.ID, admin.Role)
-			fmt.Println("Token Generated is", token)
-
-			Res := SignInResponse{}
-			Res.ID = admin.ID
-			Res.Token = token
-			output, _ := json.Marshal(Res)
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(201)
-			fmt.Fprintf(w, "%s", output)
+				Res := SignInResponse{}
+				Res.ID = admin.ID
+				Res.Token = token
+				output, _ := json.Marshal(Res)
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(201)
+				fmt.Fprintf(w, "%s", output)
+			}
 		} else {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(404)
