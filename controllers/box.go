@@ -52,7 +52,6 @@ func (ad BoxController) CreateBox(w http.ResponseWriter, r *http.Request, p http
 func (ad BoxController) UpdateBox(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 	// validate id and return the object of id
-	SetupResponse(&w, r)
 
 	// edit  the new changes in the object
 	// update the doc in DB
@@ -70,4 +69,17 @@ func (ad BoxController) UpdateBox(w http.ResponseWriter, r *http.Request, p http
 	fmt.Fprintf(w, "%s", output)
 
 	// fmt.Fprintf(w, "%s", uj)
+}
+
+// GetBoxes ... get  box resource
+func (ad BoxController) GetBoxes(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	// cat := []models.Cateogory{}
+	var results []bson.M
+
+	ad.session.DB("dibs").C("Boxes").Find(bson.M{}).All(&results)
+	output, _ := json.Marshal(results)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	fmt.Fprintf(w, "%s", output)
 }

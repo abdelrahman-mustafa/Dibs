@@ -9,7 +9,7 @@ import (
 var Box = controllers.NewBoxController(models.GetSession())
 
 func init() {
-	R.POST("/box", Box.CreateBox)
-	R.PUT("/box/:id", Box.UpdateBox)
-
+	R.POST("/admin/box", Box.CreateBox)
+	R.PUT("/admin/box/:id", Box.UpdateBox)
+	R.GET("/admin/boxes", Box.GetBoxes)
 }
