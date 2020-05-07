@@ -106,6 +106,7 @@ func (ad CatController) GetCateogories(w http.ResponseWriter, r *http.Request, p
 			},
 		},
 	}).All(&results)
+
 	output, _ := json.Marshal(results)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)

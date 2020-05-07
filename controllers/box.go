@@ -50,7 +50,13 @@ func (ad BoxController) CreateBox(w http.ResponseWriter, r *http.Request, p http
 
 // UpdateBox ... updates a new Box resource
 func (ad BoxController) UpdateBox(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-
+	isExist := models.IsBox(p.ByName("id"))
+	if isExist == false {
+		w.Header().Set("Content-Type", "appliBoxion/json")
+		w.WriteHeader(401)
+		fmt.Fprintf(w, "%s", "Not valid Box")
+		return
+	}
 	// validate id and return the object of id
 
 	// edit  the new changes in the object
@@ -82,4 +88,34 @@ func (ad BoxController) GetBoxes(w http.ResponseWriter, r *http.Request, p httpr
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 	fmt.Fprintf(w, "%s", output)
+}
+
+// GetBox ... updates a new Box resource
+func (ad BoxController) GetBox(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	// validate id and return the object of id
+
+	// edit  the new changes in the object
+	// update the doc in DB
+	isExist := models.IsBox(p.ByName("id"))
+	if isExist == false {
+		w.Header().Set("Content-Type", "appliBoxion/json")
+		w.WriteHeader(401)
+		fmt.Fprintf(w, "%s", "Not valid Box")
+		return
+	}
+	Box := models.Box{}
+	//prase json  of body and attach to admoin struct
+	json.NewDecoder(r.Body).Decode(&Box)
+
+	// write struct of admni to DB
+	ad.session.DB("dibs").C("Boxes").FindId(p.ByName("id")).One(&Box)
+
+	// convert struct to JSON
+	output, _ := json.Marshal(Box)
+	w.Header().Set("Content-Type", "appliBoxion/json")
+	w.WriteHeader(201)
+	fmt.Fprintf(w, "%s", output)
+
+	// fmt.Fprintf(w, "%s", uj)
 }
