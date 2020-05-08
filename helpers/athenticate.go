@@ -3,16 +3,20 @@ package helpers
 import (
 	"net/http"
 	"strings"
+
+	"github.com/julienschmidt/httprouter"
 )
 
 //Authenticate ... Middleware for request authentication
-func Authenticate(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func Authenticate(next httprouter.Handle) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		tokn := r.Header.Get("Authorization")
-		tokn = strings.Replace(tokn, "bearer", "", 1)
+		println(tokn)
+		tokn = strings.Replace(tokn, "bearer ", "", 1)
 
-		_, err := VerifyToken(tokn)
-		if err != nil {
+		println(tokn)
+		isValid := VerifyToken(tokn)
+		if isValid != true {
 			w.WriteHeader(404)
 			w.Write([]byte("Not Authorized"))
 			return
@@ -20,7 +24,7 @@ func Authenticate(next http.HandlerFunc) http.HandlerFunc {
 
 		// find user if founct go to next if not return back
 
-		next.ServeHTTP(w, r)
+		next(w, r, ps)
 
 	}
 }

@@ -42,21 +42,19 @@ type Data struct {
 }
 
 //VerifyToken ...
-func VerifyToken(token string) (Data, error) {
+func VerifyToken(token string) bool {
 	claims := &Claims{}
 
 	tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
 	})
 
-	if tkn.Valid {
-		data := Data{
-			Username: claims.Username,
-			Role:     claims.Role,
-		}
-		return data, nil
+	if err != nil {
+		return false
 	}
-	data := Data{}
-	return data, err
+	if !tkn.Valid {
+		return false
+	}
 
+	return true
 }

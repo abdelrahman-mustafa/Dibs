@@ -2,6 +2,7 @@ package routes
 
 import (
 	"../controllers"
+	"../helpers"
 	"../models"
 )
 
@@ -10,11 +11,11 @@ var Cateogory = controllers.NewCatController(models.GetSession())
 
 func init() {
 	// admin routes
-	R.POST("/admin/cateogory", Cateogory.CreateCateogory)
-	R.PUT("/admin/cateogory/:id", Cateogory.UpdateCateogory)
-	R.GET("/admin/cateogories", Cateogory.GetCateogories)
-	R.GET("/admin/cateogory/:id", Cateogory.GetCateogory)
-	R.DELETE("/admin/cateogory/:id", Cateogory.DeleteCateogory)
+	R.POST("/admin/cateogory", helpers.Authenticate(Cateogory.CreateCateogory))
+	R.PUT("/admin/cateogory/:id", helpers.Authenticate(Cateogory.UpdateCateogory))
+	R.GET("/admin/cateogories", helpers.Authenticate(Cateogory.GetCateogories))
+	R.GET("/admin/cateogory/:id", helpers.Authenticate(Cateogory.GetCateogory))
+	R.DELETE("/admin/cateogory/:id", helpers.Authenticate(Cateogory.DeleteCateogory))
 
 	// user routes
 	R.GET("/user/cateogories", Cateogory.GetCateogories)
