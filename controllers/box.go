@@ -120,3 +120,22 @@ func (ad BoxController) GetBox(w http.ResponseWriter, r *http.Request, p httprou
 
 	// fmt.Fprintf(w, "%s", uj)
 }
+
+// DeleteBox ...  Delete Box resource
+func (ad BoxController) DeleteBox(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	isExist := models.IsBox(p.ByName("id"))
+	if isExist == false {
+		w.Header().Set("Content-Type", "appliBoxion/json")
+		w.WriteHeader(401)
+		fmt.Fprintf(w, "%s", "Not valid Box")
+		return
+	}
+
+	oid := bson.ObjectIdHex(p.ByName("id"))
+	ad.session.DB("dibs").C("Boxes").RemoveId(oid)
+
+	w.WriteHeader(201)
+	fmt.Fprintf(w, "%s", "Deleted")
+
+}
