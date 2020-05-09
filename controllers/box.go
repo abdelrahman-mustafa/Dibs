@@ -6,6 +6,7 @@ import (
 
 	"net/http"
 
+	"../helpers"
 	"../models"
 	"github.com/julienschmidt/httprouter"
 	mgo "gopkg.in/mgo.v2"
@@ -35,6 +36,8 @@ func (ad BoxController) CreateBox(w http.ResponseWriter, r *http.Request, p http
 	//create id
 	Box.ID = bson.NewObjectId()
 
+	encryptedPassword, _ := helpers.Encrypt(Box.Password)
+	Box.Password = encryptedPassword
 	// write struct of admni to DB
 	ad.session.DB("dibs").C("Boxes").Insert(Box)
 
