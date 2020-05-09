@@ -13,6 +13,7 @@ func init() {
 	R.POST("/admin/box", helpers.Authenticate(Box.CreateBox))
 	R.PUT("/admin/box/:id", helpers.Authenticate(Box.UpdateBox))
 	R.GET("/admin/boxes", helpers.Authenticate(Box.GetBoxes))
+	R.GET("/admin/box/:id", helpers.Authenticate(Box.GetBox))
 
 	// user
 	R.GET("/user/box/:id", Box.GetBox)

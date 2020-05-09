@@ -63,9 +63,10 @@ func (ad BoxController) UpdateBox(w http.ResponseWriter, r *http.Request, p http
 	Box := models.Box{}
 	//prase json  of body and attach to admoin struct
 	json.NewDecoder(r.Body).Decode(&Box)
+	oid := bson.ObjectIdHex(p.ByName("id"))
 
 	// write struct of admni to DB
-	ad.session.DB("dibs").C("Boxes").UpdateId(p.ByName("id"), Box)
+	ad.session.DB("dibs").C("Boxes").UpdateId(oid, Box)
 
 	// convert struct to JSON
 	output, _ := json.Marshal(Box)
@@ -107,8 +108,9 @@ func (ad BoxController) GetBox(w http.ResponseWriter, r *http.Request, p httprou
 	//prase json  of body and attach to admoin struct
 	json.NewDecoder(r.Body).Decode(&Box)
 
+	oid := bson.ObjectIdHex(p.ByName("id"))
 	// write struct of admni to DB
-	ad.session.DB("dibs").C("Boxes").FindId(p.ByName("id")).One(&Box)
+	ad.session.DB("dibs").C("Boxes").FindId(oid).One(&Box)
 
 	// convert struct to JSON
 	output, _ := json.Marshal(Box)
