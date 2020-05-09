@@ -12,8 +12,8 @@ type (
 		Username       string        `json:"username,omitempty" bson:"username"`
 		Password       string        `json:"password,omitempty" bson:"password"`
 		AvailableBoxes int           `json:"availableBoxes,omitempty" bson:"availableBoxes"`
-		Long           string        `json:"long,omitempty" bson:"long"`
-		Lat            string        `json:"lat,omitempty" bson:"lat"`
+		Long           float64       `json:"long,omitempty" bson:"long"`
+		Lat            float64       `json:"lat,omitempty" bson:"lat"`
 		From           int           `json:"from,omitempty" bson:"from"`
 		To             int           `json:"to,omitempty" bson:"to"`
 		Price          int           `json:"price,omitempty" bson:"price"`
