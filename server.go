@@ -1,14 +1,16 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"./routes"
-	"github.com/rs/cors"
+	"github.com/gorilla/handlers"
 )
 
 func main() {
 
-	handler := cors.Default().Handler(routes.R)
-	http.ListenAndServe(":3000", handler)
+	handlers.AllowedOrigins([]string{"*"})
+	log.Fatal(http.ListenAndServe(":3000", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(routes.R)))
+
 }
