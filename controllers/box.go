@@ -66,6 +66,11 @@ func (ad BoxController) UpdateBox(w http.ResponseWriter, r *http.Request, p http
 	Box := models.Box{}
 	//prase json  of body and attach to admoin struct
 	json.NewDecoder(r.Body).Decode(&Box)
+
+	if Box.Password != "" {
+		encryptedPassword, _ := helpers.Encrypt(Box.Password)
+		Box.Password = encryptedPassword
+	}
 	oid := bson.ObjectIdHex(p.ByName("id"))
 	out := bson.M{"$set": Box}
 
