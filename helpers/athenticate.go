@@ -11,10 +11,8 @@ import (
 func Authenticate(next httprouter.Handle) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		tokn := r.Header.Get("Authorization")
-		println(tokn)
 		tokn = strings.Replace(tokn, "bearer ", "", 1)
 
-		println(tokn)
 		isValid := VerifyToken(tokn)
 		if isValid != true {
 			w.WriteHeader(404)

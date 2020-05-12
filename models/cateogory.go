@@ -7,9 +7,9 @@ import (
 type (
 	// Cateogory represents the structure of our resource
 	Cateogory struct {
-		ID    bson.ObjectId   `json:"id,omitempty" bson:"_id"`
-		Name  string          `json:"name,omitempty" bson:"name"`
-		Boxes []bson.ObjectId `json:"boxes,omitempty" bson:"boxes"`
+		ID    bson.ObjectId   `json:"id,omitempty" bson:"_id,omitempty"`
+		Name  string          `json:"name,omitempty" bson:"name,omitempty"`
+		Boxes []bson.ObjectId `json:"boxes,omitempty" bson:"boxes,omitempty"`
 	}
 )
 

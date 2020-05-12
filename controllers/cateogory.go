@@ -59,8 +59,10 @@ func (ad CatController) UpdateCateogory(w http.ResponseWriter, r *http.Request, 
 	}
 	cat := models.Cateogory{}
 	json.NewDecoder(r.Body).Decode(&cat)
+	oid := bson.ObjectIdHex(p.ByName("id"))
 
-	ad.session.DB("dibs").C("cateogories").UpdateId(cateogoryID, cat)
+	out := bson.M{"$set": cat}
+	ad.session.DB("dibs").C("cateogories").UpdateId(oid, out)
 
 	w.Header().Set("Content-Type", "appliBoxion/json")
 	w.WriteHeader(200)
