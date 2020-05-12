@@ -29,10 +29,14 @@ type (
 func IsBox(id string) bool {
 	oid := bson.ObjectIdHex(id)
 	session := GetSession()
-	if err := session.DB("dibs").C("Boxes").FindId(oid); err != nil {
+	box := Box{}
+	session.DB("dibs").C("Boxes").FindId(oid).One(&box)
+
+	if box.Name != "" || box.Username != "" {
+		return true
+	} else {
 		return false
 	}
-	return true
 }
 
 type (
