@@ -29,7 +29,7 @@ type (
 func IsBox(id string) bool {
 	oid := bson.ObjectIdHex(id)
 	session := GetSession()
-	if err := session.DB("dibs").C("boxes").FindId(oid); err != nil {
+	if err := session.DB("dibs").C("Boxes").FindId(oid); err != nil {
 		return false
 	}
 	return true
