@@ -9,15 +9,15 @@ import (
 type (
 	// User represents the structure of our resource
 	User struct {
-		ID        bson.ObjectId `json:"id,omitempty" bson:"_id" `
-		Name      string        `json:"name,omitempty" bson:"name"`
-		Username  string        `json:"username,omitempty" bson:"username"`
-		Password  string        `json:"password,omitempty" bson:"password"`
-		Phone     int64         `json:"phone,omitempty" bson:"phone"`
-		Email     string        `json:"email,omitempty" bson:"email"`
-		Area      string        `json:"area,omitempty" bson:"area"`
-		Orders    []string      `json:"orders,omitempty" bson:"orders"`
-		Favorites []string      `json:"favorites,omitempty" bson:"favorites"`
+		ID        bson.ObjectId `json:"id,omitempty" bson:"_id"`
+		Name      string        `json:"name,omitempty" bson:"name,omitempty"`
+		Username  string        `json:"username,omitempty" bson:"username,omitempty"`
+		Password  string        `json:"password,omitempty" bson:"password,omitempty"`
+		Phone     int64         `json:"phone,omitempty" bson:"phone,omitempty"`
+		Email     string        `json:"email,omitempty" bson:"email,omitempty"`
+		Area      string        `json:"area,omitempty" bson:"area,omitempty"`
+		Orders    []string      `json:"orders,omitempty" bson:"orders,omitempty"`
+		Favorites []string      `json:"favorites,omitempty" bson:"favorites,omitempty"`
 	}
 )
 
@@ -59,4 +59,20 @@ func IsUserExist(username string) (bool, string, bson.ObjectId) {
 	}
 
 	return true, user.Password, user.ID
+}
+
+//GetUserByEmail ... validates the id is for User
+func GetUserByEmail(email string) bool {
+
+	fmt.Println("Start find the user", email)
+	session := GetSession()
+	user := User{}
+	error := session.DB("dibs").C("users").Find(bson.M{"email": email}).One(&user)
+	fmt.Println("User is found ", user)
+	fmt.Println("Start find the user", user.Username)
+	if error != nil {
+		return false
+	}
+
+	return true
 }

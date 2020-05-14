@@ -6,6 +6,7 @@ import (
 
 	"net/http"
 
+	"../helpers"
 	"../models"
 	"github.com/julienschmidt/httprouter"
 	mgo "gopkg.in/mgo.v2"
@@ -39,12 +40,10 @@ func (ad CatController) CreateCateogory(w http.ResponseWriter, r *http.Request, 
 	ad.session.DB("dibs").C("cateogories").Insert(Cat)
 
 	// convert struct to JSON
-	output, _ := json.Marshal(Cat)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(201)
-	fmt.Fprintf(w, "%s", output)
+	// output, _ := json.Marshal(Cat)
+	res := helpers.ResController{w}
 
-	// fmt.Fprintf(w, "%s", uj)
+	res.SendBadRequest("Done Sussesfully")
 }
 
 // UpdateCateogory ... update  Cat resource

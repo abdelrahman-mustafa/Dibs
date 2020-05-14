@@ -135,3 +135,23 @@ func (ad UserController) GetUser(w http.ResponseWriter, r *http.Request, p httpr
 	w.WriteHeader(201)
 	fmt.Fprintf(w, "%s", output)
 }
+
+// IsUserExist ... IsUserExist data
+func (ad UserController) IsUserExistByEmail(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	fmt.Println("Start Get user data")
+
+	// get user id from header
+	email := p.ByName("email")
+	fmt.Println("Start Get from email  is ", email)
+
+	user := models.GetUserByEmail(email)
+	if user == false {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(404)
+		w.Write([]byte("User is not Found"))
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+}
