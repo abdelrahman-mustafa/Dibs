@@ -20,7 +20,7 @@ type SignInResponse struct {
 
 // SignInAsUser ... sign in as User
 type SignInAsUser struct {
-	Username string `json:"username" bson:"username"`
+	Email    string `json:"email" bson:"email"`
 	Password string `json:"password" bson:"password"`
 }
 
@@ -85,19 +85,19 @@ func (ad UserController) Signin(w http.ResponseWriter, r *http.Request, p httpro
 	json.NewDecoder(r.Body).Decode(&signIn)
 
 	//verify username
-	isValid, userPassword, userID := models.IsUserExist(signIn.Username)
+	isValid, userPassword, userID := models.IsUserExist(signIn.Email)
 	if isValid == false {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(404)
-		w.Write([]byte("Not valid username"))
+		res := helpers.ResController{Res: w}
+
+		res.SendResponse("Not valid Email", 401)
 		return
 	}
 
 	err := helpers.Compare(userPassword, signIn.Password)
 	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(404)
-		w.Write([]byte("Not valid password"))
+		res := helpers.ResController{Res: w}
+
+		res.SendResponse("Not valid password", 401)
 		return
 	}
 
@@ -128,7 +128,7 @@ func (ad UserController) GetUser(w http.ResponseWriter, r *http.Request, p httpr
 	}
 	output, _ := json.Marshal(user)
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(201)
+	w.WriteHeader(200)
 	fmt.Fprintf(w, "%s", output)
 }
 
@@ -147,6 +147,7 @@ func (ad UserController) IsUserExistByEmail(w http.ResponseWriter, r *http.Reque
 		res.SendResponse("Not Fount", 404)
 		return
 	}
+
 	res.SendResponse("Found", 200)
 
 }

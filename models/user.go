@@ -44,11 +44,11 @@ func GetUser(id string) User {
 }
 
 //IsUserExist ... validates the id is for User
-func IsUserExist(username string) (bool, string, bson.ObjectId) {
+func IsUserExist(email string) (bool, string, bson.ObjectId) {
 
-	fmt.Println("Start find the user", username)
+	fmt.Println("Start find the user", email)
 	user := User{}
-	error := Session.DB("dibs").C("users").Find(bson.M{"username": username}).One(&user)
+	error := Session.DB("dibs").C("users").Find(bson.M{"email": email}).One(&user)
 	fmt.Println("User is found ", user)
 	fmt.Println("Start find the user", user.Username)
 	if error != nil {
