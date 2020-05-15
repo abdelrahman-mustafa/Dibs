@@ -13,7 +13,7 @@ type (
 		Name      string        `json:"name,omitempty" bson:"name,omitempty"`
 		Username  string        `json:"username,omitempty" bson:"username,omitempty"`
 		Password  string        `json:"password,omitempty" bson:"password,omitempty"`
-		Phone     int64         `json:"phone,omitempty" bson:"phone,omitempty"`
+		Phone     string        `json:"phone,omitempty" bson:"phone,omitempty"`
 		Email     string        `json:"email,omitempty" bson:"email,omitempty"`
 		Area      string        `json:"area,omitempty" bson:"area,omitempty"`
 		Orders    []string      `json:"orders,omitempty" bson:"orders,omitempty"`
