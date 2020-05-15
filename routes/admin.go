@@ -2,11 +2,10 @@ package routes
 
 import (
 	"../controllers"
-	"../models"
 )
 
 //Admin ... instance
-var Admin = controllers.NewAdminController(models.GetSession())
+var Admin = controllers.NewAdminController()
 
 func init() {
 	R.POST("/admin", Admin.CreateAdmin)

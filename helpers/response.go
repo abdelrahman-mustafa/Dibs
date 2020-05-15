@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -14,9 +15,16 @@ type (
 	}
 )
 
-//SendBadRequest ...
-func (Res *ResController) SendBadRequest(message string) {
+type response struct {
+	Message string `json:"message"`
+	Code    int    `json:"code"`
+}
+
+//SendResponse ...
+func (Res *ResController) SendResponse(message string, code int) {
+	res := response{message, code}
+	output, _ := json.Marshal(res)
 	Res.Res.Header().Set("Content-Type", "application/json")
-	Res.Res.WriteHeader(201)
-	fmt.Fprintf(Res.Res, "%s", message)
+	Res.Res.WriteHeader(code)
+	fmt.Fprintf(Res.Res, "%s", output)
 }

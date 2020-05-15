@@ -9,7 +9,6 @@ import (
 	"../helpers"
 	"../models"
 	"github.com/julienschmidt/httprouter"
-	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -24,13 +23,12 @@ type (
 
 	// AdminController represents the controller for operating on the admin resource
 	AdminController struct {
-		session *mgo.Session
 	}
 )
 
 // NewAdminController ... returns a instance of UserController structure
-func NewAdminController(s *mgo.Session) *AdminController {
-	return &AdminController{s}
+func NewAdminController() *AdminController {
+	return &AdminController{}
 }
 
 // CreateAdmin ... creates a new admin resource
@@ -52,13 +50,11 @@ func (ad AdminController) CreateAdmin(w http.ResponseWriter, r *http.Request, p 
 	admin.ID = bson.NewObjectId()
 
 	// write struct of admni to DB
-	ad.session.DB("dibs").C("admins").Insert(admin)
+	models.Session.DB("dibs").C("admins").Insert(admin)
 
 	// convert struct to JSON
-	output, _ := json.Marshal(admin)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(201)
-	fmt.Fprintf(w, "%s", output)
+	res := helpers.ResController{Res: w}
+	res.SendResponse("the admin is created", 200)
 
 	// fmt.Fprintf(w, "%s", uj)
 }
@@ -81,15 +77,14 @@ func (ad AdminController) Signin(w http.ResponseWriter, r *http.Request, p httpr
 			encryptedPassword, er := helpers.Encrypt(admin.Password)
 
 			if er != nil {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(400)
-				fmt.Fprintf(w, "%s", "Something went wrong")
+				res := helpers.ResController{Res: w}
+				res.SendResponse("Something went wrong", 404)
 			} else {
 				//create id
 				admin.ID = bson.NewObjectId()
 				admin.Password = encryptedPassword
 				// write struct of admin to DB
-				ad.session.DB("dibs").C("admins").Insert(admin)
+				models.Session.DB("dibs").C("admins").Insert(admin)
 
 				token := helpers.GenerateToken(admin.ID, admin.Role)
 				fmt.Println("Token Generated is", token)
@@ -99,20 +94,18 @@ func (ad AdminController) Signin(w http.ResponseWriter, r *http.Request, p httpr
 				Res.Token = token
 				output, _ := json.Marshal(Res)
 				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(201)
+				w.WriteHeader(200)
 				fmt.Fprintf(w, "%s", output)
 			}
 		} else {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(404)
-			w.Write([]byte("Not Authorized"))
+			res := helpers.ResController{Res: w}
+			res.SendResponse("Not Authorized", 404)
 		}
 	} else {
 		err := helpers.Compare(password, signIn.Password)
 		if err != nil {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(404)
-			w.Write([]byte("Not Authorized"))
+			res := helpers.ResController{Res: w}
+			res.SendResponse("Not Authorized", 404)
 		} else {
 			token := helpers.GenerateToken(id, role)
 			Res := SignInResponse{}
@@ -120,7 +113,7 @@ func (ad AdminController) Signin(w http.ResponseWriter, r *http.Request, p httpr
 			Res.Token = token
 			output, _ := json.Marshal(Res)
 			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(201)
+			w.WriteHeader(2010)
 			fmt.Fprintf(w, "%s", output)
 
 		}

@@ -9,7 +9,6 @@ import (
 	"../helpers"
 	"../models"
 	"github.com/julienschmidt/httprouter"
-	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -17,13 +16,12 @@ type (
 
 	// BoxController represents the controller for operating on the Box resource
 	BoxController struct {
-		session *mgo.Session
 	}
 )
 
 // NewBoxController ... returns a instance of UserController structure
-func NewBoxController(s *mgo.Session) *BoxController {
-	return &BoxController{s}
+func NewBoxController() *BoxController {
+	return &BoxController{}
 }
 
 // CreateBox ... creates a new Box resource
@@ -39,14 +37,12 @@ func (ad BoxController) CreateBox(w http.ResponseWriter, r *http.Request, p http
 	encryptedPassword, _ := helpers.Encrypt(Box.Password)
 	Box.Password = encryptedPassword
 	// write struct of admni to DB
-	ad.session.DB("dibs").C("Boxes").Insert(Box)
+	models.Session.DB("dibs").C("Boxes").Insert(Box)
 
 	// convert struct to JSON
-	output, _ := json.Marshal(Box)
-	w.Header().Set("Content-Type", "appliBoxion/json")
-	w.WriteHeader(201)
-	fmt.Fprintf(w, "%s", output)
 
+	res := helpers.ResController{Res: w}
+	res.SendResponse("The Box is created successfully", 200)
 	// fmt.Fprintf(w, "%s", uj)
 }
 
@@ -54,9 +50,8 @@ func (ad BoxController) CreateBox(w http.ResponseWriter, r *http.Request, p http
 func (ad BoxController) UpdateBox(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	isExist := models.IsBox(p.ByName("id"))
 	if isExist == false {
-		w.Header().Set("Content-Type", "appliBoxion/json")
-		w.WriteHeader(401)
-		fmt.Fprintf(w, "%s", "Not valid Box")
+		res := helpers.ResController{Res: w}
+		res.SendResponse("Not valid Box", 401)
 		return
 	}
 	// validate id and return the object of id
@@ -75,13 +70,10 @@ func (ad BoxController) UpdateBox(w http.ResponseWriter, r *http.Request, p http
 	out := bson.M{"$set": Box}
 
 	// write struct of admni to DB
-	ad.session.DB("dibs").C("Boxes").UpdateId(oid, out)
+	models.Session.DB("dibs").C("Boxes").UpdateId(oid, out)
 
-	// convert struct to JSON
-	output, _ := json.Marshal(Box)
-	w.Header().Set("Content-Type", "appliBoxion/json")
-	w.WriteHeader(201)
-	fmt.Fprintf(w, "%s", output)
+	res := helpers.ResController{Res: w}
+	res.SendResponse("The Box is updated successfully", 200)
 
 	// fmt.Fprintf(w, "%s", uj)
 }
@@ -92,7 +84,7 @@ func (ad BoxController) GetBoxes(w http.ResponseWriter, r *http.Request, p httpr
 	// cat := []models.Cateogory{}
 	var results []bson.M
 
-	ad.session.DB("dibs").C("Boxes").Find(bson.M{}).All(&results)
+	models.Session.DB("dibs").C("Boxes").Find(bson.M{}).All(&results)
 	output, _ := json.Marshal(results)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
@@ -119,7 +111,7 @@ func (ad BoxController) GetBox(w http.ResponseWriter, r *http.Request, p httprou
 
 	oid := bson.ObjectIdHex(p.ByName("id"))
 	// write struct of admni to DB
-	ad.session.DB("dibs").C("Boxes").FindId(oid).One(&Box)
+	models.Session.DB("dibs").C("Boxes").FindId(oid).One(&Box)
 
 	// convert struct to JSON
 	output, _ := json.Marshal(Box)
@@ -134,17 +126,15 @@ func (ad BoxController) GetBox(w http.ResponseWriter, r *http.Request, p httprou
 func (ad BoxController) DeleteBox(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 	isExist := models.IsBox(p.ByName("id"))
+	res := helpers.ResController{Res: w}
 	if isExist == false {
-		w.Header().Set("Content-Type", "appliBoxion/json")
-		w.WriteHeader(401)
-		fmt.Fprintf(w, "%s", "Not valid Box")
+		res.SendResponse("Not valid Box", 401)
 		return
 	}
 
 	oid := bson.ObjectIdHex(p.ByName("id"))
-	ad.session.DB("dibs").C("Boxes").RemoveId(oid)
+	models.Session.DB("dibs").C("Boxes").RemoveId(oid)
 
-	w.WriteHeader(201)
-	fmt.Fprintf(w, "%s", "Deleted")
+	res.SendResponse("The box is Deleted successfully", 200)
 
 }

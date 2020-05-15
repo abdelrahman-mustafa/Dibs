@@ -28,9 +28,8 @@ type (
 //IsBox ... validates the id is for box
 func IsBox(id string) bool {
 	oid := bson.ObjectIdHex(id)
-	session := GetSession()
 	box := Box{}
-	session.DB("dibs").C("Boxes").FindId(oid).One(&box)
+	Session.DB("dibs").C("Boxes").FindId(oid).One(&box)
 
 	if box.Name != "" || box.Username != "" {
 		return true

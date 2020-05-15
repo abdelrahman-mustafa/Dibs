@@ -19,8 +19,7 @@ type (
 //IsAdmin ... validates the id is for admin
 func IsAdmin(id string) bool {
 
-	session := GetSession()
-	if err := session.DB("dibs").C("admins").FindId(id); err != nil {
+	if err := Session.DB("dibs").C("admins").FindId(id); err != nil {
 		return false
 	}
 	return true
@@ -30,9 +29,8 @@ func IsAdmin(id string) bool {
 func IsAdminExist(username string) (bool, string, bson.ObjectId, string) {
 
 	fmt.Println("Start find the admin", username)
-	session := GetSession()
 	admin := Admin{}
-	error := session.DB("dibs").C("admins").Find(bson.M{"username": username}).One(&admin)
+	error := Session.DB("dibs").C("admins").Find(bson.M{"username": username}).One(&admin)
 	fmt.Println("Admin is found ", admin)
 	fmt.Println("Start find the Admin", admin.Username)
 	if error != nil {

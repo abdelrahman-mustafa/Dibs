@@ -9,7 +9,6 @@ import (
 	"../helpers"
 	"../models"
 	"github.com/julienschmidt/httprouter"
-	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -17,13 +16,12 @@ type (
 
 	// CatController represents the controller for operating on the Cat resource
 	CatController struct {
-		session *mgo.Session
 	}
 )
 
 // NewCatController ... returns a instance of UserController structure
-func NewCatController(s *mgo.Session) *CatController {
-	return &CatController{s}
+func NewCatController() *CatController {
+	return &CatController{}
 }
 
 // CreateCateogory ... creates a new Cat resource
@@ -37,13 +35,12 @@ func (ad CatController) CreateCateogory(w http.ResponseWriter, r *http.Request, 
 	Cat.ID = bson.NewObjectId()
 
 	// write struct of admni to DB
-	ad.session.DB("dibs").C("cateogories").Insert(Cat)
+	models.Session.DB("dibs").C("cateogories").Insert(Cat)
 
 	// convert struct to JSON
 	// output, _ := json.Marshal(Cat)
-	res := helpers.ResController{w}
-
-	res.SendBadRequest("Done Sussesfully")
+	res := helpers.ResController{Res: w}
+	res.SendResponse("the cateogory is created", 200)
 }
 
 // UpdateCateogory ... update  Cat resource
@@ -61,12 +58,10 @@ func (ad CatController) UpdateCateogory(w http.ResponseWriter, r *http.Request, 
 	oid := bson.ObjectIdHex(p.ByName("id"))
 
 	out := bson.M{"$set": cat}
-	ad.session.DB("dibs").C("cateogories").UpdateId(oid, out)
+	models.Session.DB("dibs").C("cateogories").UpdateId(oid, out)
 
-	w.Header().Set("Content-Type", "appliBoxion/json")
-	w.WriteHeader(200)
-	fmt.Fprintf(w, "%s", "The cateogory is updated successfully")
-
+	res := helpers.ResController{Res: w}
+	res.SendResponse("The cateogory is updated successfully", 200)
 }
 
 // GetCateogory ... get  Cat resource
@@ -76,15 +71,14 @@ func (ad CatController) GetCateogory(w http.ResponseWriter, r *http.Request, p h
 
 	isExist := models.IsCateogoryExist(cateogoryID)
 	if isExist == false {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(401)
-		fmt.Fprintf(w, "%s", "It is not valid cateogory")
+		res := helpers.ResController{Res: w}
+		res.SendResponse("It is not valid cateogory", 404)
 		return
 	}
 	oid := bson.ObjectIdHex(cateogoryID)
 
 	cat := models.Cateogory{}
-	ad.session.DB("dibs").C("cateogories").FindId(oid).One(&cat)
+	models.Session.DB("dibs").C("cateogories").FindId(oid).One(&cat)
 	output, _ := json.Marshal(cat)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
@@ -97,7 +91,7 @@ func (ad CatController) GetCateogories(w http.ResponseWriter, r *http.Request, p
 	// cat := []models.Cateogory{}
 	var results []bson.M
 
-	ad.session.DB("dibs").C("cateogories").Pipe([]bson.M{
+	models.Session.DB("dibs").C("cateogories").Pipe([]bson.M{
 		{
 			"$lookup": bson.M{
 				"from":         "Boxes",
@@ -117,26 +111,19 @@ func (ad CatController) GetCateogories(w http.ResponseWriter, r *http.Request, p
 // DeleteCateogory ... delete  Cat resource
 func (ad CatController) DeleteCateogory(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	cateogoryID := p.ByName("id")
-	println("Finding id", cateogoryID)
-
+	res := helpers.ResController{Res: w}
 	isExist := models.IsCateogoryExist(cateogoryID)
 	if isExist == false {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(401)
-		fmt.Fprintf(w, "%s", "It is not valid cateogory")
+		res.SendResponse("It is not valid cateogory", 404)
 		return
 	}
 	oid := bson.ObjectIdHex(cateogoryID)
 
-	err := ad.session.DB("dibs").C("cateogories").RemoveId(oid)
+	err := models.Session.DB("dibs").C("cateogories").RemoveId(oid)
 
 	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(401)
-		fmt.Fprintf(w, "%s", "There is a problem")
+		res.SendResponse("There is a problem, try later", 401)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-	fmt.Fprintf(w, "%s", "The cateogory is deleted successfully")
+	res.SendResponse("The cateogory is deleted successfully", 200)
 }

@@ -9,7 +9,6 @@ import (
 	"../helpers"
 	"../models"
 	"github.com/julienschmidt/httprouter"
-	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -29,13 +28,12 @@ type (
 
 	// UserController represents the controller for operating on the User resource
 	UserController struct {
-		session *mgo.Session
 	}
 )
 
 // NewUserController ... returns a instance of UserController structure
-func NewUserController(s *mgo.Session) *UserController {
-	return &UserController{s}
+func NewUserController() *UserController {
+	return &UserController{}
 }
 
 // CreateUser ... creates a new User resource
@@ -54,15 +52,14 @@ func (ad UserController) CreateUser(w http.ResponseWriter, r *http.Request, p ht
 	encryptedPassword, er := helpers.Encrypt(User.Password)
 
 	if er != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(400)
-		w.Write([]byte("Something goes wrong"))
+		res := helpers.ResController{Res: w}
+		res.SendResponse("Something goes wrong", 500)
 		return
 	}
 
 	User.Password = encryptedPassword
 	// write struct of admni to DB
-	ad.session.DB("dibs").C("users").Insert(User)
+	models.Session.DB("dibs").C("users").Insert(User)
 
 	// build response for user
 	token := helpers.GenerateToken(User.ID, "user")
@@ -125,9 +122,8 @@ func (ad UserController) GetUser(w http.ResponseWriter, r *http.Request, p httpr
 
 	user := models.GetUser(id)
 	if user.Username == "" {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(400)
-		w.Write([]byte("User is not Found"))
+		res := helpers.ResController{Res: w}
+		res.SendResponse("Not Fount", 404)
 		return
 	}
 	output, _ := json.Marshal(user)
@@ -136,7 +132,7 @@ func (ad UserController) GetUser(w http.ResponseWriter, r *http.Request, p httpr
 	fmt.Fprintf(w, "%s", output)
 }
 
-// IsUserExist ... IsUserExist data
+// IsUserExistByEmail ... IsUserExistByEmail data
 func (ad UserController) IsUserExistByEmail(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 	fmt.Println("Start Get user data")
@@ -146,12 +142,11 @@ func (ad UserController) IsUserExistByEmail(w http.ResponseWriter, r *http.Reque
 	fmt.Println("Start Get from email  is ", email)
 
 	user := models.GetUserByEmail(email)
+	res := helpers.ResController{Res: w}
 	if user == false {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(404)
-		w.Write([]byte("User is not Found"))
+		res.SendResponse("Not Fount", 404)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
+	res.SendResponse("Found", 200)
+
 }

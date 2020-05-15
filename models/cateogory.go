@@ -17,9 +17,8 @@ type (
 func IsCateogoryExist(id string) bool {
 	oid := bson.ObjectIdHex(id)
 
-	session := GetSession()
 	cat := Cateogory{}
-	session.DB("dibs").C("cateogories").FindId(oid).One(&cat)
+	Session.DB("dibs").C("cateogories").FindId(oid).One(&cat)
 	if cat.Name == "" {
 		return false
 	}

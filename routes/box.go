@@ -3,11 +3,10 @@ package routes
 import (
 	"../controllers"
 	"../helpers"
-	"../models"
 )
 
 //Box ... instance
-var Box = controllers.NewBoxController(models.GetSession())
+var Box = controllers.NewBoxController()
 
 func init() {
 	R.POST("/admin/box", helpers.Authenticate(Box.CreateBox))

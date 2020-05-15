@@ -26,8 +26,7 @@ func IsUser(id string) bool {
 
 	oid := bson.ObjectIdHex(id)
 
-	session := GetSession()
-	if err := session.DB("dibs").C("users").FindId(oid); err != nil {
+	if err := Session.DB("dibs").C("users").FindId(oid); err != nil {
 		return false
 	}
 	return true
@@ -37,10 +36,9 @@ func IsUser(id string) bool {
 func GetUser(id string) User {
 	fmt.Println("Start with id  is ", id)
 
-	session := GetSession()
 	user := User{}
 	oid := bson.ObjectIdHex(id)
-	session.DB("dibs").C("users").FindId(oid).One(&user)
+	Session.DB("dibs").C("users").FindId(oid).One(&user)
 	fmt.Println("Start with data ", user)
 	return user
 }
@@ -49,9 +47,8 @@ func GetUser(id string) User {
 func IsUserExist(username string) (bool, string, bson.ObjectId) {
 
 	fmt.Println("Start find the user", username)
-	session := GetSession()
 	user := User{}
-	error := session.DB("dibs").C("users").Find(bson.M{"username": username}).One(&user)
+	error := Session.DB("dibs").C("users").Find(bson.M{"username": username}).One(&user)
 	fmt.Println("User is found ", user)
 	fmt.Println("Start find the user", user.Username)
 	if error != nil {
@@ -65,9 +62,8 @@ func IsUserExist(username string) (bool, string, bson.ObjectId) {
 func GetUserByEmail(email string) bool {
 
 	fmt.Println("Start find the user", email)
-	session := GetSession()
 	user := User{}
-	error := session.DB("dibs").C("users").Find(bson.M{"email": email}).One(&user)
+	error := Session.DB("dibs").C("users").Find(bson.M{"email": email}).One(&user)
 	fmt.Println("User is found ", user)
 	fmt.Println("Start find the user", user.Username)
 	if error != nil {
