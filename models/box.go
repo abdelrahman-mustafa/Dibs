@@ -33,9 +33,9 @@ func IsBox(id string) bool {
 
 	if box.Name != "" || box.Username != "" {
 		return true
-	} else {
-		return false
 	}
+	return false
+
 }
 
 type (
