@@ -4,6 +4,12 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+//GeoJSON ...
+type GeoJSON struct {
+	Type        string    `json:"-"`
+	Coordinates []float64 `json:"coordinates"`
+}
+
 type (
 	// Box represents the structure of our resource
 	Box struct {
@@ -13,8 +19,8 @@ type (
 		Username       string        `json:"username,omitempty" bson:"username,omitempty"`
 		Password       string        `json:"password,omitempty" bson:"password,omitempty"`
 		AvailableBoxes int           `json:"availableBoxes,omitempty" bson:"availableBoxes,omitempty"`
-		Long           uint64        `json:"long,omitempty" bson:"long,omitempty"`
-		Lat            uint64        `json:"lat,omitempty" bson:"lat,omitempty"`
+		Long           float64       `json:"long,omitempty," bson:"-"`
+		Lat            float64       `json:"lat,omitempty" bson:"-"`
 		From           int           `json:"from,omitempty" bson:"from,omitempty"`
 		To             int           `json:"to,omitempty" bson:"to,omitempty"`
 		Price          int           `json:"price,omitempty" bson:"price,omitempty"`
@@ -24,6 +30,7 @@ type (
 		Description    string        `json:"description,omitempty" bson:"description,omitempty"`
 		DescriptionAR  string        `json:"descriptionAR,omitempty" bson:"descriptionAR,omitempty"`
 		IsActive       bool          `json:"isActive,omitempty" bson:"isActive,omitempty"`
+		Location       GeoJSON       `bson:"location,omitempty" json:"location,omitempty"`
 	}
 )
 

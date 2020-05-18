@@ -36,6 +36,8 @@ func (ad BoxController) CreateBox(w http.ResponseWriter, r *http.Request, p http
 
 	encryptedPassword, _ := helpers.Encrypt(Box.Password)
 	Box.Password = encryptedPassword
+	Box.Location.Type = "Point"
+	Box.Location.Coordinates = []float64{Box.Lat, Box.Long}
 	// write struct of admni to DB
 	models.Session.DB("dibs").C("Boxes").Insert(Box)
 
@@ -68,6 +70,11 @@ func (ad BoxController) UpdateBox(w http.ResponseWriter, r *http.Request, p http
 	}
 	oid := bson.ObjectIdHex(p.ByName("id"))
 	out := bson.M{"$set": Box}
+
+	if Box.Lat != 0 {
+		Box.Location.Type = "Point"
+		Box.Location.Coordinates = []float64{Box.Lat, Box.Long}
+	}
 
 	// write struct of admni to DB
 	models.Session.DB("dibs").C("Boxes").UpdateId(oid, out)
