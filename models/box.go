@@ -58,9 +58,9 @@ type (
 		AvailableBoxes int           `json:"availableBoxes,omitempty" bson:"availableBoxes,omitempty"`
 		Long           uint64        `json:"long,omitempty" bson:"long,omitempty"`
 		Lat            uint64        `json:"lat,omitempty" bson:"lat,omitempty"`
-		From           int           `json:"from,omitempty" bson:"from,omitempty"`
-		To             int           `json:"to,omitempty" bson:"to,omitempty"`
-		Price          int           `json:"price,omitempty" bson:"price,omitempty"`
+		From           string        `json:"from,omitempty" bson:"from,omitempty"`
+		To             string        `json:"to,omitempty" bson:"to,omitempty"`
+		Price          float32       `json:"price,omitempty" bson:"price,omitempty"`
 		Banner         string        `json:"banner,omitempty" bson:"banner,omitempty"`
 		Logo           string        `json:"logo,omitempty" bson:"logo,omitempty"`
 		Contact        string        `json:"contact,omitempty" bson:"contact,omitempty"`
