@@ -9,11 +9,12 @@ type (
 	Box struct {
 		ID             bson.ObjectId `json:"id,omitempty" bson:"_id,omitempty"`
 		Name           string        `json:"name,omitempty" bson:"name,omitempty"`
+		NameAR         string        `json:"nameAR,omitempty" bson:"nameAR,omitempty"`
 		Username       string        `json:"username,omitempty" bson:"username,omitempty"`
 		Password       string        `json:"password,omitempty" bson:"password,omitempty"`
 		AvailableBoxes int           `json:"availableBoxes,omitempty" bson:"availableBoxes,omitempty"`
-		Long           float64       `json:"long,omitempty" bson:"long,omitempty"`
-		Lat            float64       `json:"lat,omitempty" bson:"lat,omitempty"`
+		Long           uint64        `json:"long,omitempty" bson:"long,omitempty"`
+		Lat            uint64        `json:"lat,omitempty" bson:"lat,omitempty"`
 		From           int           `json:"from,omitempty" bson:"from,omitempty"`
 		To             int           `json:"to,omitempty" bson:"to,omitempty"`
 		Price          int           `json:"price,omitempty" bson:"price,omitempty"`
@@ -21,6 +22,7 @@ type (
 		Logo           string        `json:"logo,omitempty" bson:"logo,omitempty"`
 		Contact        string        `json:"contact,omitempty" bson:"contact,omitempty"`
 		Description    string        `json:"description,omitempty" bson:"description,omitempty"`
+		DescriptionAR  string        `json:"descriptionAR,omitempty" bson:"descriptionAR,omitempty"`
 		IsActive       bool          `json:"isActive,omitempty" bson:"isActive,omitempty"`
 	}
 )
@@ -47,10 +49,10 @@ type (
 		Username       string        `json:"-" bson:"username,omitempty"`
 		Password       string        `json:"-" bson:"password,omitempty"`
 		AvailableBoxes int           `json:"availableBoxes,omitempty" bson:"availableBoxes,omitempty"`
-		Long           string        `json:"long,omitempty" bson:"long,omitempty"`
-		Lat            string        `json:"lat,omitempty" bson:"lat,omitempty"`
-		From           string        `json:"from,omitempty" bson:"from,omitempty"`
-		To             string        `json:"to,omitempty" bson:"to,omitempty"`
+		Long           uint64        `json:"long,omitempty" bson:"long,omitempty"`
+		Lat            uint64        `json:"lat,omitempty" bson:"lat,omitempty"`
+		From           int           `json:"from,omitempty" bson:"from,omitempty"`
+		To             int           `json:"to,omitempty" bson:"to,omitempty"`
 		Price          int           `json:"price,omitempty" bson:"price,omitempty"`
 		Banner         string        `json:"banner,omitempty" bson:"banner,omitempty"`
 		Logo           string        `json:"logo,omitempty" bson:"logo,omitempty"`

@@ -9,6 +9,7 @@ type (
 	Cateogory struct {
 		ID      bson.ObjectId   `json:"id,omitempty" bson:"_id,omitempty"`
 		Name    string          `json:"name,omitempty" bson:"name,omitempty"`
+		NameAR  string          `json:"nameAR,omitempty" bson:"nameAR,omitempty"`
 		IsFirst bool            `json:"isFirst,omitempty" bson:"isFirst,omitempty"`
 		Boxes   []bson.ObjectId `json:"boxes,omitempty" bson:"boxes,omitempty"`
 	}
