@@ -31,6 +31,7 @@ type (
 		DescriptionAR  string        `json:"descriptionAR,omitempty" bson:"descriptionAR,omitempty"`
 		IsActive       bool          `json:"isActive,omitempty" bson:"isActive,omitempty"`
 		Location       GeoJSON       `bson:"location,omitempty" json:"location,omitempty"`
+		Cateogories    []Cateogory   `json:"cateogories,omitempty" bson:"cateogories,omitempty"`
 	}
 )
 

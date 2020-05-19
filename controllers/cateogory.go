@@ -35,6 +35,19 @@ func (ad CatController) CreateCateogory(w http.ResponseWriter, r *http.Request, 
 	Cat.ID = bson.NewObjectId()
 
 	// write struct of admni to DB
+
+	for _, id := range Cat.Boxes {
+		println("Start update box", id)
+		err := models.Session.DB("dibs").C("Boxes").UpdateId(id, bson.M{
+			"$addToSet": bson.M{
+				"cateogories": Cat,
+			},
+		})
+		if err != nil {
+			panic(err)
+		}
+
+	}
 	models.Session.DB("dibs").C("cateogories").Insert(Cat)
 
 	// convert struct to JSON
@@ -56,6 +69,17 @@ func (ad CatController) UpdateCateogory(w http.ResponseWriter, r *http.Request, 
 	cat := models.Cateogory{}
 	json.NewDecoder(r.Body).Decode(&cat)
 	oid := bson.ObjectIdHex(p.ByName("id"))
+
+	if len(cat.Boxes) != 0 {
+		for _, id := range cat.Boxes {
+			models.Session.DB("dibs").C("Boxes").UpdateId(id, bson.M{
+				"$addToSet": bson.M{
+					"cateogories": cat,
+				},
+			})
+
+		}
+	}
 
 	out := bson.M{"$set": cat}
 	models.Session.DB("dibs").C("cateogories").UpdateId(oid, out)
@@ -91,7 +115,7 @@ func (ad CatController) GetCateogories(w http.ResponseWriter, r *http.Request, p
 	// cat := []models.Cateogory{}
 	var results []bson.M
 
-	models.Session.DB("dibs").C("cateogories").Pipe([]bson.M{
+	err := models.Session.DB("dibs").C("cateogories").Pipe([]bson.M{
 		{
 			"$lookup": bson.M{
 				"from":         "Boxes",
@@ -102,6 +126,9 @@ func (ad CatController) GetCateogories(w http.ResponseWriter, r *http.Request, p
 		},
 	}).All(&results)
 
+	if err != nil {
+		panic(err)
+	}
 	output, _ := json.Marshal(results)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)

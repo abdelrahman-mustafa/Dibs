@@ -17,5 +17,6 @@ func init() {
 
 	// user
 	R.GET("/user/box/:id", Box.GetBox)
+	R.GET("/user/boxes/cateogory/:id", Box.GetBoxesByCateogory)
 
 }

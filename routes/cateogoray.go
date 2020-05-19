@@ -19,7 +19,7 @@ func init() {
 
 	// user routes
 	R.GET("/user/cateogories", Cateogory.GetCateogories)
-	R.GET("/user/cateogory/:id", Cateogory.GetCateogory)
+	// R.GET("/user/cateogory/:id", Cateogory.GetCateogory)
 	//R.GET("/user/cateogory/", Cateogory.GetCateogory)
 
 }

@@ -3,12 +3,14 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"net/http"
 
 	"../helpers"
 	"../models"
 	"github.com/julienschmidt/httprouter"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -37,10 +39,24 @@ func (ad BoxController) CreateBox(w http.ResponseWriter, r *http.Request, p http
 	encryptedPassword, _ := helpers.Encrypt(Box.Password)
 	Box.Password = encryptedPassword
 	Box.Location.Type = "Point"
-	Box.Location.Coordinates = []float64{Box.Lat, Box.Long}
+	Box.Location.Coordinates = []float64{Box.Long, Box.Lat}
 	// write struct of admni to DB
-	models.Session.DB("dibs").C("Boxes").Insert(Box)
 
+	println("Data", Box.Password)
+	err := models.Session.DB("dibs").C("Boxes").Insert(Box)
+	if err != nil {
+		panic(err)
+	}
+
+	index := mgo.Index{
+		Key:  []string{"$2dsphere:location"},
+		Bits: 26,
+	}
+
+	err = models.Session.DB("dibs").C("Boxes").EnsureIndex(index)
+	if err != nil {
+		panic(err)
+	}
 	// convert struct to JSON
 
 	res := helpers.ResController{Res: w}
@@ -91,7 +107,20 @@ func (ad BoxController) GetBoxes(w http.ResponseWriter, r *http.Request, p httpr
 	// cat := []models.Cateogory{}
 	var results []bson.M
 
-	models.Session.DB("dibs").C("Boxes").Find(bson.M{}).All(&results)
+	err := models.Session.DB("dibs").C("Boxes").Pipe([]bson.M{
+		{
+			"$geoNear": bson.M{
+				"near":          bson.M{"type": "Point", "coordinates": []float64{139.701642, 35.690647}},
+				"maxDistance":   200000000000,
+				"distanceField": "dist.location",
+				"spherical":     true,
+			},
+		},
+	}).All(&results)
+
+	if err != nil {
+		panic(err)
+	}
 	output, _ := json.Marshal(results)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
@@ -127,6 +156,40 @@ func (ad BoxController) GetBox(w http.ResponseWriter, r *http.Request, p httprou
 	fmt.Fprintf(w, "%s", output)
 
 	// fmt.Fprintf(w, "%s", uj)
+}
+
+// GetBoxesByCateogory ... get  box resource
+func (ad BoxController) GetBoxesByCateogory(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	queryValues := r.URL.Query()
+
+	lat, _ := strconv.ParseFloat(queryValues.Get("lat"), 64)
+	long, _ := strconv.ParseFloat(queryValues.Get("long"), 64)
+
+	var results []bson.M
+	oid := bson.ObjectIdHex(p.ByName("id"))
+
+	err := models.Session.DB("dibs").C("Boxes").Pipe([]bson.M{
+		{
+			"$geoNear": bson.M{
+				"near":          bson.M{"type": "Point", "coordinates": []float64{long, lat}},
+				"maxDistance":   200000000000,
+				"distanceField": "distance",
+				"spherical":     true,
+			},
+		},
+		{
+			"$match": bson.M{"cateogories._id": oid},
+		},
+	}).All(&results)
+
+	if err != nil {
+		panic(err)
+	}
+	output, _ := json.Marshal(results)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	fmt.Fprintf(w, "%s", output)
 }
 
 // DeleteBox ...  Delete Box resource
