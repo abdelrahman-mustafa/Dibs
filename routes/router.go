@@ -1,6 +1,17 @@
 package routes
 
-import "github.com/julienschmidt/httprouter"
+import (
+	"github.com/julienschmidt/httprouter"
+	mgo "gopkg.in/mgo.v2"
+)
 
-// R Instantiate a new router
-var R = httprouter.New()
+//InitRouter ... Instantiate a new router
+func InitRouter(db *mgo.Session) *httprouter.Router {
+	R := httprouter.New()
+	InitBox(R, db)
+	InitAdmin(R, db)
+	InitCat(R, db)
+	InitUser(R, db)
+
+	return R
+}

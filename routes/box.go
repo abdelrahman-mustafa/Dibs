@@ -3,12 +3,14 @@ package routes
 import (
 	"../controllers"
 	"../helpers"
+	"github.com/julienschmidt/httprouter"
+	mgo "gopkg.in/mgo.v2"
 )
 
-//Box ... instance
-var Box = controllers.NewBoxController()
+//InitBox ... instance
+func InitBox(R *httprouter.Router, session *mgo.Session) {
+	Box := controllers.NewBoxController(session)
 
-func init() {
 	R.POST("/admin/box", helpers.Authenticate(Box.CreateBox))
 	R.PUT("/admin/box/:id", helpers.Authenticate(Box.UpdateBox))
 	R.GET("/admin/boxes", helpers.Authenticate(Box.GetBoxes))

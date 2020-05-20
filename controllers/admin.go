@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	mgo "gopkg.in/mgo.v2"
+
 	"net/http"
 
 	"../helpers"
@@ -23,12 +25,13 @@ type (
 
 	// AdminController represents the controller for operating on the admin resource
 	AdminController struct {
+		session *mgo.Session
 	}
 )
 
 // NewAdminController ... returns a instance of UserController structure
-func NewAdminController() *AdminController {
-	return &AdminController{}
+func NewAdminController(session *mgo.Session) *AdminController {
+	return &AdminController{session}
 }
 
 // CreateAdmin ... creates a new admin resource
@@ -50,7 +53,7 @@ func (ad AdminController) CreateAdmin(w http.ResponseWriter, r *http.Request, p 
 	admin.ID = bson.NewObjectId()
 
 	// write struct of admni to DB
-	models.Session.DB("dibs").C("admins").Insert(admin)
+	ad.session.DB("dibs").C("admins").Insert(admin)
 
 	// convert struct to JSON
 	res := helpers.ResController{Res: w}
@@ -84,7 +87,7 @@ func (ad AdminController) Signin(w http.ResponseWriter, r *http.Request, p httpr
 				admin.ID = bson.NewObjectId()
 				admin.Password = encryptedPassword
 				// write struct of admin to DB
-				models.Session.DB("dibs").C("admins").Insert(admin)
+				ad.session.DB("dibs").C("admins").Insert(admin)
 
 				token := helpers.GenerateToken(admin.ID, admin.Role)
 				fmt.Println("Token Generated is", token)

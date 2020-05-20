@@ -3,13 +3,14 @@ package routes
 import (
 	"../controllers"
 	"../helpers"
+	"github.com/julienschmidt/httprouter"
+	mgo "gopkg.in/mgo.v2"
 )
 
-//Cateogory ... instance
-
-func init() {
+//InitCat ... instance
+func InitCat(R *httprouter.Router, session *mgo.Session) {
 	// admin routes
-	Cateogory := controllers.NewCatController()
+	Cateogory := controllers.NewCatController(session)
 
 	R.POST("/admin/cateogory", helpers.Authenticate(Cateogory.CreateCateogory))
 	R.PUT("/admin/cateogory/:id", helpers.Authenticate(Cateogory.UpdateCateogory))

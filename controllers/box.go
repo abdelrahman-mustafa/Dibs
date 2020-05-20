@@ -18,12 +18,13 @@ type (
 
 	// BoxController represents the controller for operating on the Box resource
 	BoxController struct {
+		session *mgo.Session
 	}
 )
 
 // NewBoxController ... returns a instance of UserController structure
-func NewBoxController() *BoxController {
-	return &BoxController{}
+func NewBoxController(session *mgo.Session) *BoxController {
+	return &BoxController{session}
 }
 
 // CreateBox ... creates a new Box resource
@@ -43,7 +44,7 @@ func (ad BoxController) CreateBox(w http.ResponseWriter, r *http.Request, p http
 	// write struct of admni to DB
 
 	println("Data", Box.Password)
-	err := models.Session.DB("dibs").C("Boxes").Insert(Box)
+	err := ad.session.DB("dibs").C("Boxes").Insert(Box)
 	if err != nil {
 		panic(err)
 	}
@@ -53,7 +54,7 @@ func (ad BoxController) CreateBox(w http.ResponseWriter, r *http.Request, p http
 		Bits: 26,
 	}
 
-	err = models.Session.DB("dibs").C("Boxes").EnsureIndex(index)
+	err = ad.session.DB("dibs").C("Boxes").EnsureIndex(index)
 	if err != nil {
 		panic(err)
 	}
@@ -93,7 +94,7 @@ func (ad BoxController) UpdateBox(w http.ResponseWriter, r *http.Request, p http
 	}
 
 	// write struct of admni to DB
-	models.Session.DB("dibs").C("Boxes").UpdateId(oid, out)
+	ad.session.DB("dibs").C("Boxes").UpdateId(oid, out)
 
 	res := helpers.ResController{Res: w}
 	res.SendResponse("The Box is updated successfully", 200)
@@ -107,7 +108,7 @@ func (ad BoxController) GetBoxes(w http.ResponseWriter, r *http.Request, p httpr
 	// cat := []models.Cateogory{}
 	var results []bson.M
 
-	err := models.Session.DB("dibs").C("Boxes").Pipe([]bson.M{
+	err := ad.session.DB("dibs").C("Boxes").Pipe([]bson.M{
 		{
 			"$geoNear": bson.M{
 				"near":          bson.M{"type": "Point", "coordinates": []float64{139.701642, 35.690647}},
@@ -147,7 +148,7 @@ func (ad BoxController) GetBox(w http.ResponseWriter, r *http.Request, p httprou
 
 	oid := bson.ObjectIdHex(p.ByName("id"))
 	// write struct of admni to DB
-	models.Session.DB("dibs").C("Boxes").FindId(oid).One(&Box)
+	ad.session.DB("dibs").C("Boxes").FindId(oid).One(&Box)
 
 	// convert struct to JSON
 	output, _ := json.Marshal(Box)
@@ -169,7 +170,7 @@ func (ad BoxController) GetBoxesByCateogory(w http.ResponseWriter, r *http.Reque
 	var results []bson.M
 	oid := bson.ObjectIdHex(p.ByName("id"))
 
-	err := models.Session.DB("dibs").C("Boxes").Pipe([]bson.M{
+	err := ad.session.DB("dibs").C("Boxes").Pipe([]bson.M{
 		{
 			"$geoNear": bson.M{
 				"near":          bson.M{"type": "Point", "coordinates": []float64{long, lat}},
@@ -203,7 +204,7 @@ func (ad BoxController) DeleteBox(w http.ResponseWriter, r *http.Request, p http
 	}
 
 	oid := bson.ObjectIdHex(p.ByName("id"))
-	models.Session.DB("dibs").C("Boxes").RemoveId(oid)
+	ad.session.DB("dibs").C("Boxes").RemoveId(oid)
 
 	res.SendResponse("The box is Deleted successfully", 200)
 

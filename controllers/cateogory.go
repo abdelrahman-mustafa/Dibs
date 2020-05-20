@@ -9,6 +9,7 @@ import (
 	"../helpers"
 	"../models"
 	"github.com/julienschmidt/httprouter"
+	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -16,12 +17,13 @@ type (
 
 	// CatController represents the controller for operating on the Cat resource
 	CatController struct {
+		session *mgo.Session
 	}
 )
 
 // NewCatController ... returns a instance of UserController structure
-func NewCatController() *CatController {
-	return &CatController{}
+func NewCatController(session *mgo.Session) *CatController {
+	return &CatController{session}
 }
 
 // CreateCateogory ... creates a new Cat resource
@@ -38,7 +40,7 @@ func (ad CatController) CreateCateogory(w http.ResponseWriter, r *http.Request, 
 
 	for _, id := range Cat.Boxes {
 		println("Start update box", id)
-		err := models.Session.DB("dibs").C("Boxes").UpdateId(id, bson.M{
+		err := ad.session.DB("dibs").C("Boxes").UpdateId(id, bson.M{
 			"$addToSet": bson.M{
 				"cateogories": Cat,
 			},
@@ -48,7 +50,7 @@ func (ad CatController) CreateCateogory(w http.ResponseWriter, r *http.Request, 
 		}
 
 	}
-	models.Session.DB("dibs").C("cateogories").Insert(Cat)
+	ad.session.DB("dibs").C("cateogories").Insert(Cat)
 
 	// convert struct to JSON
 	// output, _ := json.Marshal(Cat)
@@ -72,7 +74,7 @@ func (ad CatController) UpdateCateogory(w http.ResponseWriter, r *http.Request, 
 
 	if len(cat.Boxes) != 0 {
 		for _, id := range cat.Boxes {
-			models.Session.DB("dibs").C("Boxes").UpdateId(id, bson.M{
+			ad.session.DB("dibs").C("Boxes").UpdateId(id, bson.M{
 				"$addToSet": bson.M{
 					"cateogories": cat,
 				},
@@ -82,7 +84,7 @@ func (ad CatController) UpdateCateogory(w http.ResponseWriter, r *http.Request, 
 	}
 
 	out := bson.M{"$set": cat}
-	models.Session.DB("dibs").C("cateogories").UpdateId(oid, out)
+	ad.session.DB("dibs").C("cateogories").UpdateId(oid, out)
 
 	res := helpers.ResController{Res: w}
 	res.SendResponse("The cateogory is updated successfully", 200)
@@ -102,7 +104,7 @@ func (ad CatController) GetCateogory(w http.ResponseWriter, r *http.Request, p h
 	oid := bson.ObjectIdHex(cateogoryID)
 
 	cat := models.Cateogory{}
-	models.Session.DB("dibs").C("cateogories").FindId(oid).One(&cat)
+	ad.session.DB("dibs").C("cateogories").FindId(oid).One(&cat)
 	output, _ := json.Marshal(cat)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
@@ -115,7 +117,7 @@ func (ad CatController) GetCateogories(w http.ResponseWriter, r *http.Request, p
 	// cat := []models.Cateogory{}
 	var results []bson.M
 
-	err := models.Session.DB("dibs").C("cateogories").Pipe([]bson.M{
+	err := ad.session.DB("dibs").C("cateogories").Pipe([]bson.M{
 		{
 			"$lookup": bson.M{
 				"from":         "Boxes",
@@ -146,7 +148,7 @@ func (ad CatController) DeleteCateogory(w http.ResponseWriter, r *http.Request, 
 	}
 	oid := bson.ObjectIdHex(cateogoryID)
 
-	err := models.Session.DB("dibs").C("cateogories").RemoveId(oid)
+	err := ad.session.DB("dibs").C("cateogories").RemoveId(oid)
 
 	if err != nil {
 		res.SendResponse("There is a problem, try later", 401)

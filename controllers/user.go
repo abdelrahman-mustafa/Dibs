@@ -9,6 +9,7 @@ import (
 	"../helpers"
 	"../models"
 	"github.com/julienschmidt/httprouter"
+	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -28,12 +29,13 @@ type (
 
 	// UserController represents the controller for operating on the User resource
 	UserController struct {
+		session *mgo.Session
 	}
 )
 
 // NewUserController ... returns a instance of UserController structure
-func NewUserController() *UserController {
-	return &UserController{}
+func NewUserController(session *mgo.Session) *UserController {
+	return &UserController{session}
 }
 
 // CreateUser ... creates a new User resource
@@ -59,7 +61,7 @@ func (ad UserController) CreateUser(w http.ResponseWriter, r *http.Request, p ht
 
 	User.Password = encryptedPassword
 	// write struct of admni to DB
-	models.Session.DB("dibs").C("users").Insert(User)
+	ad.session.DB("dibs").C("users").Insert(User)
 
 	// build response for user
 	token := helpers.GenerateToken(User.ID, "user")
