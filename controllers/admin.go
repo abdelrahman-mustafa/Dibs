@@ -68,7 +68,7 @@ func (ad AdminController) Signin(w http.ResponseWriter, r *http.Request, p httpr
 	signIn := SignIn{}
 	json.NewDecoder(r.Body).Decode(&signIn)
 
-	isAdmin, password, id, role := models.IsAdminExist(signIn.Username)
+	isAdmin, password, id, role := models.IsAdminExist(signIn.Username, ad.session)
 	if isAdmin != true {
 		if signIn.Username == "admin" && signIn.Password == "admin" {
 			// create user first time

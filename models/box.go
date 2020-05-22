@@ -1,6 +1,7 @@
 package models
 
 import (
+	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -36,7 +37,7 @@ type (
 )
 
 //IsBox ... validates the id is for box
-func IsBox(id string) bool {
+func IsBox(id string, Session *mgo.Session) bool {
 	oid := bson.ObjectIdHex(id)
 	box := Box{}
 	Session.DB("dibs").C("Boxes").FindId(oid).One(&box)

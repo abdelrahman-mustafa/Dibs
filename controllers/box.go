@@ -67,7 +67,7 @@ func (ad BoxController) CreateBox(w http.ResponseWriter, r *http.Request, p http
 
 // UpdateBox ... updates a new Box resource
 func (ad BoxController) UpdateBox(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	isExist := models.IsBox(p.ByName("id"))
+	isExist := models.IsBox(p.ByName("id"), ad.session)
 	if isExist == false {
 		res := helpers.ResController{Res: w}
 		res.SendResponse("Not valid Box", 401)
@@ -135,7 +135,7 @@ func (ad BoxController) GetBox(w http.ResponseWriter, r *http.Request, p httprou
 
 	// edit  the new changes in the object
 	// update the doc in DB
-	isExist := models.IsBox(p.ByName("id"))
+	isExist := models.IsBox(p.ByName("id"), ad.session)
 	if isExist == false {
 		w.Header().Set("Content-Type", "appliBoxion/json")
 		w.WriteHeader(401)
@@ -196,7 +196,7 @@ func (ad BoxController) GetBoxesByCateogory(w http.ResponseWriter, r *http.Reque
 // DeleteBox ...  Delete Box resource
 func (ad BoxController) DeleteBox(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
-	isExist := models.IsBox(p.ByName("id"))
+	isExist := models.IsBox(p.ByName("id"), ad.session)
 	res := helpers.ResController{Res: w}
 	if isExist == false {
 		res.SendResponse("Not valid Box", 401)

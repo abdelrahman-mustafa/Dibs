@@ -1,6 +1,7 @@
 package models
 
 import (
+	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -16,7 +17,7 @@ type (
 )
 
 //IsCateogoryExist ... validates the id is for User
-func IsCateogoryExist(id string) bool {
+func IsCateogoryExist(id string, Session *mgo.Session) bool {
 	oid := bson.ObjectIdHex(id)
 
 	cat := Cateogory{}

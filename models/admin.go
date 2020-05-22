@@ -3,6 +3,8 @@ package models
 import (
 	"fmt"
 
+	"gopkg.in/mgo.v2"
+
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -17,7 +19,7 @@ type (
 )
 
 //IsAdmin ... validates the id is for admin
-func IsAdmin(id string) bool {
+func IsAdmin(id string, Session *mgo.Session) bool {
 
 	if err := Session.DB("dibs").C("admins").FindId(id); err != nil {
 		return false
@@ -26,7 +28,7 @@ func IsAdmin(id string) bool {
 }
 
 //IsAdminExist ... validates the username is for admin
-func IsAdminExist(username string) (bool, string, bson.ObjectId, string) {
+func IsAdminExist(username string, Session *mgo.Session) (bool, string, bson.ObjectId, string) {
 
 	fmt.Println("Start find the admin", username)
 	admin := Admin{}

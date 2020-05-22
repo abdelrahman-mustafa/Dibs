@@ -61,7 +61,7 @@ func (ad CatController) CreateCateogory(w http.ResponseWriter, r *http.Request, 
 // UpdateCateogory ... update  Cat resource
 func (ad CatController) UpdateCateogory(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	cateogoryID := p.ByName("id")
-	isExist := models.IsCateogoryExist(cateogoryID)
+	isExist := models.IsCateogoryExist(cateogoryID, ad.session)
 	if isExist == false {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(401)
@@ -95,7 +95,7 @@ func (ad CatController) GetCateogory(w http.ResponseWriter, r *http.Request, p h
 	cateogoryID := p.ByName("id")
 	println("Finding id", cateogoryID)
 
-	isExist := models.IsCateogoryExist(cateogoryID)
+	isExist := models.IsCateogoryExist(cateogoryID, ad.session)
 	if isExist == false {
 		res := helpers.ResController{Res: w}
 		res.SendResponse("It is not valid cateogory", 404)
@@ -141,7 +141,7 @@ func (ad CatController) GetCateogories(w http.ResponseWriter, r *http.Request, p
 func (ad CatController) DeleteCateogory(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	cateogoryID := p.ByName("id")
 	res := helpers.ResController{Res: w}
-	isExist := models.IsCateogoryExist(cateogoryID)
+	isExist := models.IsCateogoryExist(cateogoryID, ad.session)
 	if isExist == false {
 		res.SendResponse("It is not valid cateogory", 404)
 		return

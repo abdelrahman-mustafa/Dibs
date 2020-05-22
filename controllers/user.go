@@ -87,7 +87,7 @@ func (ad UserController) Signin(w http.ResponseWriter, r *http.Request, p httpro
 	json.NewDecoder(r.Body).Decode(&signIn)
 
 	//verify username
-	isValid, userPassword, userID := models.IsUserExist(signIn.Email)
+	isValid, userPassword, userID := models.IsUserExist(signIn.Email, ad.session)
 	if isValid == false {
 		res := helpers.ResController{Res: w}
 
@@ -122,7 +122,7 @@ func (ad UserController) GetUser(w http.ResponseWriter, r *http.Request, p httpr
 	id := p.ByName("id")
 	fmt.Println("Start Get from id  is ", id)
 
-	user := models.GetUser(id)
+	user := models.GetUser(id, ad.session)
 	if user.Username == "" {
 		res := helpers.ResController{Res: w}
 		res.SendResponse("Not Fount", 404)
@@ -143,7 +143,7 @@ func (ad UserController) IsUserExistByEmail(w http.ResponseWriter, r *http.Reque
 	email := p.ByName("email")
 	fmt.Println("Start Get from email  is ", email)
 
-	user := models.GetUserByEmail(email)
+	user := models.GetUserByEmail(email, ad.session)
 	res := helpers.ResController{Res: w}
 	if user == false {
 		res.SendResponse("Not Fount", 404)

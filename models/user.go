@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 
+	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -22,7 +23,7 @@ type (
 )
 
 //IsUser ... validates the id is for User
-func IsUser(id string) bool {
+func IsUser(id string, Session *mgo.Session) bool {
 
 	oid := bson.ObjectIdHex(id)
 
@@ -33,7 +34,7 @@ func IsUser(id string) bool {
 }
 
 //GetUser ... validates the id is for User
-func GetUser(id string) User {
+func GetUser(id string, Session *mgo.Session) User {
 	fmt.Println("Start with id  is ", id)
 
 	user := User{}
@@ -44,7 +45,7 @@ func GetUser(id string) User {
 }
 
 //IsUserExist ... validates the id is for User
-func IsUserExist(email string) (bool, string, bson.ObjectId) {
+func IsUserExist(email string, Session *mgo.Session) (bool, string, bson.ObjectId) {
 
 	fmt.Println("Start find the user", email)
 	user := User{}
@@ -59,7 +60,7 @@ func IsUserExist(email string) (bool, string, bson.ObjectId) {
 }
 
 //GetUserByEmail ... validates the id is for User
-func GetUserByEmail(email string) bool {
+func GetUserByEmail(email string, Session *mgo.Session) bool {
 
 	fmt.Println("Start find the user", email)
 	user := User{}
