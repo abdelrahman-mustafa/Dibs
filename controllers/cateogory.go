@@ -120,7 +120,7 @@ func (ad CatController) GetCateogories(w http.ResponseWriter, r *http.Request, p
 	err := ad.session.DB("dibs").C("cateogories").Pipe([]bson.M{
 		{
 			"$lookup": bson.M{
-				"from":         "Boxes",
+				"from":         "boxes",
 				"localField":   "boxes",
 				"foreignField": "_id",
 				"as":           "boxes",
