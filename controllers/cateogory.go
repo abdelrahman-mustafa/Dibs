@@ -40,7 +40,7 @@ func (ad CatController) CreateCateogory(w http.ResponseWriter, r *http.Request, 
 
 	for _, id := range Cat.Boxes {
 		println("Start update box", id)
-		err := ad.session.DB("dibs").C("Boxes").UpdateId(id, bson.M{
+		err := ad.session.DB("dibs").C("boxes").UpdateId(id, bson.M{
 			"$addToSet": bson.M{
 				"cateogories": Cat,
 			},
@@ -74,7 +74,7 @@ func (ad CatController) UpdateCateogory(w http.ResponseWriter, r *http.Request, 
 
 	if len(cat.Boxes) != 0 {
 		for _, id := range cat.Boxes {
-			ad.session.DB("dibs").C("Boxes").UpdateId(id, bson.M{
+			ad.session.DB("dibs").C("boxes").UpdateId(id, bson.M{
 				"$addToSet": bson.M{
 					"cateogories": cat,
 				},

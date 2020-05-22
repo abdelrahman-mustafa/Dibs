@@ -40,7 +40,7 @@ type (
 func IsBox(id string, Session *mgo.Session) bool {
 	oid := bson.ObjectIdHex(id)
 	box := Box{}
-	Session.DB("dibs").C("Boxes").FindId(oid).One(&box)
+	Session.DB("dibs").C("boxes").FindId(oid).One(&box)
 
 	if box.Name != "" || box.Username != "" {
 		return true
