@@ -106,14 +106,17 @@ func (ad BoxController) UpdateBox(w http.ResponseWriter, r *http.Request, p http
 func (ad BoxController) GetBoxes(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 	// cat := []models.Cateogory{}
+	queryValues := r.URL.Query()
+
+	lat, _ := strconv.ParseFloat(queryValues.Get("lat"), 64)
+	long, _ := strconv.ParseFloat(queryValues.Get("long"), 64)
 	var results []bson.M
 
 	err := ad.session.DB("dibs").C("boxes").Pipe([]bson.M{
 		{
 			"$geoNear": bson.M{
-				"near":          bson.M{"type": "Point", "coordinates": []float64{139.701642, 35.690647}},
-				"maxDistance":   200000000000,
-				"distanceField": "dist.location",
+				"near":          bson.M{"type": "Point", "coordinates": []float64{long, lat}},
+				"distanceField": "distance",
 				"spherical":     true,
 			},
 		},

@@ -17,13 +17,13 @@ type (
 )
 
 //IsCateogoryExist ... validates the id is for User
-func IsCateogoryExist(id string, Session *mgo.Session) bool {
+func IsCateogoryExist(id string, Session *mgo.Session) (bool, Cateogory) {
 	oid := bson.ObjectIdHex(id)
 
 	cat := Cateogory{}
 	Session.DB("dibs").C("cateogories").FindId(oid).One(&cat)
 	if cat.Name == "" {
-		return false
+		return false, cat
 	}
-	return true
+	return true, cat
 }
