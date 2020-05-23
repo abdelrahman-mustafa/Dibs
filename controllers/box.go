@@ -174,7 +174,6 @@ func (ad BoxController) GetBoxesByCateogory(w http.ResponseWriter, r *http.Reque
 		{
 			"$geoNear": bson.M{
 				"near":          bson.M{"type": "Point", "coordinates": []float64{long, lat}},
-				"maxDistance":   200000000000,
 				"distanceField": "distance",
 				"spherical":     true,
 			},

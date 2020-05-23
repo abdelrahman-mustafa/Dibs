@@ -74,6 +74,7 @@ func (ad CatController) UpdateCateogory(w http.ResponseWriter, r *http.Request, 
 
 	if len(cat.Boxes) != 0 {
 		for _, id := range cat.Boxes {
+			cat.ID = oid
 			ad.session.DB("dibs").C("boxes").UpdateId(id, bson.M{
 				"$addToSet": bson.M{
 					"cateogories": cat,
