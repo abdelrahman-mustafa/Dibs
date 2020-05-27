@@ -18,7 +18,8 @@ func InitBox(R *httprouter.Router, session *mgo.Session) {
 	R.DELETE("/admin/box/:id", helpers.Authenticate(Box.DeleteBox))
 
 	// user
-	R.GET("/user/box/:id", Box.GetBox)
-	R.GET("/user/boxes/cateogory/:id", Box.GetBoxesByCateogory)
+	R.GET("/user/box/:id", helpers.Authenticate(Box.GetBox))
+	R.GET("/user/boxes/cateogory/:id", helpers.Authenticate(Box.GetBoxesByCateogory))
+	R.GET("/user/boxes", helpers.Authenticate(Box.GetBoxes))
 
 }
