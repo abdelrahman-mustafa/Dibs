@@ -157,6 +157,11 @@ func (ad BoxController) GetBoxes(w http.ResponseWriter, r *http.Request, p httpr
 				"spherical":     true,
 			},
 		},
+		{
+			"$match": bson.M{
+				"isActive": true,
+			},
+		},
 	}).All(&results)
 
 	if err != nil {

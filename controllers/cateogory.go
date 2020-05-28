@@ -136,16 +136,17 @@ func (ad CatController) GetCateogories(w http.ResponseWriter, r *http.Request, p
 	// cat := []models.Cateogory{}
 	var results []bson.M
 
-	err := ad.session.DB("dibs").C("cateogories").Pipe([]bson.M{
-		{
-			"$lookup": bson.M{
-				"from":         "boxes",
-				"localField":   "boxes",
-				"foreignField": "_id",
-				"as":           "boxes",
-			},
-		},
-	}).All(&results)
+	// err := ad.session.DB("dibs").C("cateogories").Pipe([]bson.M{
+	// 	{
+	// 		"$lookup": bson.M{
+	// 			"from":         "boxes",
+	// 			"localField":   "boxes",
+	// 			"foreignField": "_id",
+	// 			"as":           "boxes",
+	// 		},
+	// 	},
+	// }).All(&results)
+	err := ad.session.DB("dibs").C("cateogories").Find(bson.M{}).Sort("-isFirst").All(&results)
 
 	if err != nil {
 		panic(err)
