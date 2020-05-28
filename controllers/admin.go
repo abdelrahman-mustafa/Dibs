@@ -116,7 +116,7 @@ func (ad AdminController) Signin(w http.ResponseWriter, r *http.Request, p httpr
 			Res.Token = token
 			output, _ := json.Marshal(Res)
 			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(2010)
+			w.WriteHeader(200)
 			fmt.Fprintf(w, "%s", output)
 
 		}
