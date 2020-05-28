@@ -91,6 +91,27 @@ func (ad CatController) UpdateCateogory(w http.ResponseWriter, r *http.Request, 
 	res.SendResponse("The cateogory is updated successfully", 200)
 }
 
+// UpdateCateogoryPriority ... update  Cat resource
+func (ad CatController) UpdateCateogoryPriority(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	cateogoryID := p.ByName("id")
+	isExist, cat := models.IsCateogoryExist(cateogoryID, ad.session)
+	if isExist == false {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(401)
+		fmt.Fprintf(w, "%s", "It is not valid cateogory")
+		return
+	}
+	// cat := models.Cateogory{}
+	json.NewDecoder(r.Body).Decode(&cat)
+	oid := bson.ObjectIdHex(p.ByName("id"))
+
+	out := bson.M{"$set": cat}
+	ad.session.DB("dibs").C("cateogories").UpdateId(oid, out)
+
+	res := helpers.ResController{Res: w}
+	res.SendResponse("The cateogory is updated successfully", 200)
+}
+
 // GetCateogory ... get  Cat resource
 func (ad CatController) GetCateogory(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	cateogoryID := p.ByName("id")

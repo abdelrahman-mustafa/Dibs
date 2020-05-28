@@ -102,6 +102,43 @@ func (ad BoxController) UpdateBox(w http.ResponseWriter, r *http.Request, p http
 	// fmt.Fprintf(w, "%s", uj)
 }
 
+// UpdateActivationBox ... updates a new Box resource
+func (ad BoxController) UpdateActivationBox(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	isExist := models.IsBox(p.ByName("id"), ad.session)
+	if isExist == false {
+		res := helpers.ResController{Res: w}
+		res.SendResponse("Not valid Box", 401)
+		return
+	}
+	// validate id and return the object of id
+
+	// edit  the new changes in the object
+	// update the doc in DB
+	Box := models.Box{}
+	//prase json  of body and attach to admoin struct
+	json.NewDecoder(r.Body).Decode(&Box)
+
+	if Box.Password != "" {
+		encryptedPassword, _ := helpers.Encrypt(Box.Password)
+		Box.Password = encryptedPassword
+	}
+	oid := bson.ObjectIdHex(p.ByName("id"))
+	out := bson.M{"$set": Box}
+
+	if Box.Lat != 0 {
+		Box.Location.Type = "Point"
+		Box.Location.Coordinates = []float64{Box.Lat, Box.Long}
+	}
+
+	// write struct of admni to DB
+	ad.session.DB("dibs").C("boxes").UpdateId(oid, out)
+
+	res := helpers.ResController{Res: w}
+	res.SendResponse("The Box is updated successfully", 200)
+
+	// fmt.Fprintf(w, "%s", uj)
+}
+
 // GetBoxes ... get  box resource
 func (ad BoxController) GetBoxes(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 

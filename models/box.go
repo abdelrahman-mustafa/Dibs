@@ -30,7 +30,7 @@ type (
 		Contact        string        `json:"contact,omitempty" bson:"contact,omitempty"`
 		Description    string        `json:"description,omitempty" bson:"description,omitempty"`
 		DescriptionAR  string        `json:"descriptionAR,omitempty" bson:"descriptionAR,omitempty"`
-		IsActive       bool          `json:"isActive,omitempty" bson:"isActive,omitempty"`
+		IsActive       bool          `json:"isActive,omitempty" bson:"isActive"`
 		Location       GeoJSON       `bson:"location,omitempty" json:"location,omitempty"`
 		Cateogories    []Cateogory   `json:"cateogories,omitempty" bson:"cateogories,omitempty"`
 	}
@@ -67,6 +67,6 @@ type (
 		Logo           string        `json:"logo,omitempty" bson:"logo,omitempty"`
 		Contact        string        `json:"contact,omitempty" bson:"contact,omitempty"`
 		Description    string        `json:"description,omitempty" bson:"description,omitempty"`
-		IsActive       bool          `json:"isActive,omitempty" bson:"isActive,omitempty"`
+		IsActive       int           `json:"isActive,omitempty" bson:"isActive"`
 	}
 )

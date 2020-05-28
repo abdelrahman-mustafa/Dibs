@@ -14,6 +14,7 @@ func InitCat(R *httprouter.Router, session *mgo.Session) {
 
 	R.POST("/admin/cateogory", helpers.Authenticate(Cateogory.CreateCateogory))
 	R.PUT("/admin/cateogory/:id", helpers.Authenticate(Cateogory.UpdateCateogory))
+	R.PUT("/admin/cateogory/:id/priority", helpers.Authenticate(Cateogory.UpdateCateogoryPriority))
 	R.GET("/admin/cateogories", helpers.Authenticate(Cateogory.GetCateogories))
 	R.GET("/admin/cateogory/:id", helpers.Authenticate(Cateogory.GetCateogory))
 	R.DELETE("/admin/cateogory/:id", helpers.Authenticate(Cateogory.DeleteCateogory))
