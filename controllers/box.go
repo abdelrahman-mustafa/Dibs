@@ -117,7 +117,6 @@ func (ad BoxController) GetBoxes(w http.ResponseWriter, r *http.Request, p httpr
 			"$geoNear": bson.M{
 				"near":          bson.M{"type": "Point", "coordinates": []float64{long, lat}},
 				"distanceField": "distance",
-				"maxDistance":   10000,
 				"spherical":     true,
 			},
 		},
