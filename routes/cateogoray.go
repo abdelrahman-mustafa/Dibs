@@ -20,7 +20,7 @@ func InitCat(R *httprouter.Router, session *mgo.Session) {
 	R.DELETE("/admin/cateogory/:id", helpers.Authenticate(Cateogory.DeleteCateogory))
 
 	// user routes
-	R.GET("/user/cateogories", Cateogory.GetCateogories)
+	R.GET("/user/cateogories", Cateogory.GetCateogoriesByUser)
 	// R.GET("/user/cateogory/:id", Cateogory.GetCateogory)
 	//R.GET("/user/cateogory/", Cateogory.GetCateogory)
 

@@ -130,8 +130,8 @@ func (ad CatController) GetCateogory(w http.ResponseWriter, r *http.Request, p h
 	fmt.Fprintf(w, "%s", output)
 }
 
-// GetCateogories ... get  Cat resource
-func (ad CatController) GetCateogories(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+// GetCateogoriesByUser ... get  Cat resource
+func (ad CatController) GetCateogoriesByUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 	// cat := []models.Cateogory{}
 	var results []bson.M
@@ -147,6 +147,32 @@ func (ad CatController) GetCateogories(w http.ResponseWriter, r *http.Request, p
 	// 	},
 	// }).All(&results)
 	err := ad.session.DB("dibs").C("cateogories").Find(bson.M{}).Sort("-isFirst").All(&results)
+
+	if err != nil {
+		panic(err)
+	}
+	output, _ := json.Marshal(results)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	fmt.Fprintf(w, "%s", output)
+}
+
+// GetCateogories ... get  Cat resource
+func (ad CatController) GetCateogories(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	// cat := []models.Cateogory{}
+	var results []bson.M
+
+	err := ad.session.DB("dibs").C("cateogories").Pipe([]bson.M{
+		{
+			"$lookup": bson.M{
+				"from":         "boxes",
+				"localField":   "boxes",
+				"foreignField": "_id",
+				"as":           "boxes",
+			},
+		},
+	}).All(&results)
 
 	if err != nil {
 		panic(err)
