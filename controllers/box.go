@@ -139,8 +139,8 @@ func (ad BoxController) UpdateActivationBox(w http.ResponseWriter, r *http.Reque
 	// fmt.Fprintf(w, "%s", uj)
 }
 
-// GetBoxes ... get  box resource
-func (ad BoxController) GetBoxes(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+// GetBoxesByUser ... get  box resource
+func (ad BoxController) GetBoxesByUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 	// cat := []models.Cateogory{}
 	queryValues := r.URL.Query()
@@ -160,6 +160,35 @@ func (ad BoxController) GetBoxes(w http.ResponseWriter, r *http.Request, p httpr
 		{
 			"$match": bson.M{
 				"isActive": true,
+			},
+		},
+	}).All(&results)
+
+	if err != nil {
+		panic(err)
+	}
+	output, _ := json.Marshal(results)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	fmt.Fprintf(w, "%s", output)
+}
+
+// GetBoxes ... get  box resource
+func (ad BoxController) GetBoxes(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	// cat := []models.Cateogory{}
+	queryValues := r.URL.Query()
+
+	lat, _ := strconv.ParseFloat(queryValues.Get("lat"), 64)
+	long, _ := strconv.ParseFloat(queryValues.Get("long"), 64)
+	var results []bson.M
+
+	err := ad.session.DB("dibs").C("boxes").Pipe([]bson.M{
+		{
+			"$geoNear": bson.M{
+				"near":          bson.M{"type": "Point", "coordinates": []float64{long, lat}},
+				"distanceField": "distance",
+				"spherical":     true,
 			},
 		},
 	}).All(&results)
