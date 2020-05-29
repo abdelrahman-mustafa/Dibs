@@ -25,6 +25,7 @@ type (
 		From           string        `json:"from,omitempty" bson:"from,omitempty"`
 		To             string        `json:"to,omitempty" bson:"to,omitempty"`
 		Price          int           `json:"price,omitempty" bson:"price,omitempty"`
+		OriginalPrice  int           `json:"originalPrice,omitempty" bson:"originalPrice,omitempty"`
 		Banner         string        `json:"banner,omitempty" bson:"banner,omitempty"`
 		Logo           string        `json:"logo,omitempty" bson:"logo,omitempty"`
 		Contact        string        `json:"contact,omitempty" bson:"contact,omitempty"`
