@@ -184,6 +184,13 @@ func (ad BoxController) UpdateActivationBox(w http.ResponseWriter, r *http.Reque
 	// fmt.Fprintf(w, "%s", uj)
 }
 
+type queryBody struct {
+	From        int      `json:"from,omitempty"`
+	To          int      `json:"to,omitempty"`
+	Cateogories []string `json:"cateogories,omitempty"`
+	Name        string   `json:"name,omitempty"`
+}
+
 // SearchBoxes ... get  box resource
 func (ad BoxController) SearchBoxes(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
@@ -193,25 +200,39 @@ func (ad BoxController) SearchBoxes(w http.ResponseWriter, r *http.Request, p ht
 	lat, _ := strconv.ParseFloat(queryValues.Get("lat"), 64)
 	long, _ := strconv.ParseFloat(queryValues.Get("long"), 64)
 
-	from, _ := strconv.ParseInt(queryValues.Get("from"), 10, 64)
-	to, _ := strconv.ParseInt(queryValues.Get("to"), 10, 64)
-
-	println("from", from)
-	println("to", to)
+	queryBox := queryBody{}
+	//prase json  of body and attach to admoin struct
+	json.NewDecoder(r.Body).Decode(&queryBox)
 
 	var andQuery []bson.M
 	var query bson.M
 	andQuery = append(andQuery, bson.M{"isActive": true})
-	if from != 0 {
-		println("from", from)
+	if queryBox.From != 0 {
+		println("from", queryBox.From)
 		andQuery = append(andQuery, bson.M{"fromHour": bson.M{
-			"$lte": to,
+			"$lte": queryBox.To,
 		}})
 		andQuery = append(andQuery, bson.M{"fromHour": bson.M{
-			"$gte": from,
+			"$gte": queryBox.From,
 		}})
 
 	}
+	var cateogories []bson.ObjectId
+
+	if len(queryBox.Cateogories) > 0 {
+
+		for _, item := range queryBox.Cateogories {
+			cateogories = append(cateogories, bson.ObjectIdHex(item))
+		}
+		andQuery = append(andQuery, bson.M{"cateogories._id": bson.M{
+			"$in": cateogories,
+		}})
+	}
+
+	if queryBox.Name != "" {
+		andQuery = append(andQuery, bson.M{"name": queryBox.Name})
+	}
+
 	var results []bson.M
 	query = bson.M{
 		"$and": andQuery,
