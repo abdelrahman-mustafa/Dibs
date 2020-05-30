@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"time"
 
 	"net/http"
 
@@ -44,6 +45,26 @@ func (ad BoxController) CreateBox(w http.ResponseWriter, r *http.Request, p http
 	// write struct of admni to DB
 
 	println("Data", Box.Password)
+
+	layOut := "2006-01-02T15:04:05"
+	toTimeStamp, errTo := time.Parse(layOut, Box.To)
+
+	if errTo != nil {
+		fmt.Println(errTo)
+		Box.ToHour = 0
+	}
+
+	tohour, _, _ := toTimeStamp.Clock()
+	Box.ToHour = tohour
+	fromTimeStamp, errFrom := time.Parse(layOut, Box.From)
+
+	if errFrom != nil {
+		fmt.Println(errFrom)
+		Box.FromHour = 0
+	}
+
+	fromHour, _, _ := fromTimeStamp.Clock()
+	Box.FromHour = fromHour
 	err := ad.session.DB("dibs").C("boxes").Insert(Box)
 	if err != nil {
 		panic(err)
@@ -93,6 +114,30 @@ func (ad BoxController) UpdateBox(w http.ResponseWriter, r *http.Request, p http
 		Box.Location.Coordinates = []float64{Box.Lat, Box.Long}
 	}
 
+	layOut := "YYYY-MM-DDTHH:MM:SS.SSS"
+	if Box.To != "" {
+		toTimeStamp, errTo := time.Parse(layOut, Box.To)
+
+		if errTo != nil {
+			fmt.Println(errTo)
+			Box.ToHour = 0
+		}
+
+		tohour, _, _ := toTimeStamp.Clock()
+		Box.ToHour = tohour
+	}
+	if Box.From != "" {
+		fromTimeStamp, errFrom := time.Parse(layOut, Box.From)
+
+		if errFrom != nil {
+			fmt.Println(errFrom)
+			Box.FromHour = 0
+		}
+
+		fromHour, _, _ := fromTimeStamp.Clock()
+		Box.FromHour = fromHour
+	}
+
 	// write struct of admni to DB
 	ad.session.DB("dibs").C("boxes").UpdateId(oid, out)
 
@@ -137,6 +182,60 @@ func (ad BoxController) UpdateActivationBox(w http.ResponseWriter, r *http.Reque
 	res.SendResponse("The Box is updated successfully", 200)
 
 	// fmt.Fprintf(w, "%s", uj)
+}
+
+// SearchBoxes ... get  box resource
+func (ad BoxController) SearchBoxes(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	// cat := []models.Cateogory{}
+	queryValues := r.URL.Query()
+
+	lat, _ := strconv.ParseFloat(queryValues.Get("lat"), 64)
+	long, _ := strconv.ParseFloat(queryValues.Get("long"), 64)
+
+	from, _ := strconv.ParseInt(queryValues.Get("from"), 10, 64)
+	to, _ := strconv.ParseInt(queryValues.Get("to"), 10, 64)
+
+	println("from", from)
+	println("to", to)
+
+	var andQuery []bson.M
+	var query bson.M
+	andQuery = append(andQuery, bson.M{"isActive": true})
+	if from != 0 {
+		println("from", from)
+		andQuery = append(andQuery, bson.M{"fromHour": bson.M{
+			"$lte": to,
+		}})
+		andQuery = append(andQuery, bson.M{"fromHour": bson.M{
+			"$gte": from,
+		}})
+
+	}
+	var results []bson.M
+	query = bson.M{
+		"$and": andQuery,
+	}
+	err := ad.session.DB("dibs").C("boxes").Pipe([]bson.M{
+		{
+			"$geoNear": bson.M{
+				"near":          bson.M{"type": "Point", "coordinates": []float64{long, lat}},
+				"distanceField": "distance",
+				"spherical":     true,
+			},
+		},
+		{
+			"$match": query,
+		},
+	}).All(&results)
+
+	if err != nil {
+		panic(err)
+	}
+	output, _ := json.Marshal(results)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	fmt.Fprintf(w, "%s", output)
 }
 
 // GetBoxesByUser ... get  box resource

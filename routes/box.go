@@ -22,5 +22,6 @@ func InitBox(R *httprouter.Router, session *mgo.Session) {
 	R.GET("/user/box/:id", helpers.Authenticate(Box.GetBox))
 	R.GET("/user/boxes/cateogory/:id", helpers.Authenticate(Box.GetBoxesByCateogory))
 	R.GET("/user/boxes", helpers.Authenticate(Box.GetBoxesByUser))
+	R.GET("/user/boxes/search", helpers.Authenticate(Box.SearchBoxes))
 
 }

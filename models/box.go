@@ -24,6 +24,8 @@ type (
 		Lat            float64       `json:"lat,omitempty" bson:"-"`
 		From           string        `json:"from,omitempty" bson:"from,omitempty"`
 		To             string        `json:"to,omitempty" bson:"to,omitempty"`
+		FromHour       int           `json:"fromHour,omitempty" bson:"fromHour,omitempty"`
+		ToHour         int           `json:"toHour,omitempty" bson:"toHour,omitempty"`
 		Price          int           `json:"price,omitempty" bson:"price,omitempty"`
 		OriginalPrice  int           `json:"originalPrice,omitempty" bson:"originalPrice,omitempty"`
 		Banner         string        `json:"banner,omitempty" bson:"banner,omitempty"`
