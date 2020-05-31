@@ -361,28 +361,62 @@ func (ad BoxController) GetBoxesByCateogory(w http.ResponseWriter, r *http.Reque
 
 	queryValues := r.URL.Query()
 
+	
 	lat, _ := strconv.ParseFloat(queryValues.Get("lat"), 64)
 	long, _ := strconv.ParseFloat(queryValues.Get("long"), 64)
-
 	var results []bson.M
 	oid := bson.ObjectIdHex(p.ByName("id"))
 
-	err := ad.session.DB("dibs").C("boxes").Pipe([]bson.M{
-		{
-			"$geoNear": bson.M{
-				"near":          bson.M{"type": "Point", "coordinates": []float64{long, lat}},
-				"distanceField": "distance",
-				"spherical":     true,
+	isExist, cat := models.IsCateogoryExist(p.ByName("id"), ad.session)
+	if isExist != false && cat.Name != "" && cat.Name != "In Your Hood" {
+		err := ad.session.DB("dibs").C("boxes").Pipe([]bson.M{
+			{
+				"$geoNear": bson.M{
+					"near":          bson.M{"type": "Point", "coordinates": []float64{long, lat}},
+					"distanceField": "distance",
+					"maxDistance":   5000,
+					"spherical":     true,
+				},
 			},
-		},
-		{
-			"$match": bson.M{"cateogories._id": oid},
-		},
-	}).All(&results)
-
-	if err != nil {
-		panic(err)
+		}).All(&results)
+		if err != nil {
+			panic(err)
+		}
+	} else if isExist != false && cat.Name != "" && cat.Name != "JUST Missed" {
+		err := ad.session.DB("dibs").C("boxes").Pipe([]bson.M{
+			{
+				"$geoNear": bson.M{
+					"near":          bson.M{"type": "Point", "coordinates": []float64{long, lat}},
+					"distanceField": "distance",
+					"maxDistance":   5000,
+					"spherical":     true,
+				},
+			},
+			{
+				"$match": bson.M{"availableBoxes": 0},
+			},
+		}).All(&results)
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		err := ad.session.DB("dibs").C("boxes").Pipe([]bson.M{
+			{
+				"$geoNear": bson.M{
+					"near":          bson.M{"type": "Point", "coordinates": []float64{long, lat}},
+					"distanceField": "distance",
+					"spherical":     true,
+				},
+			},
+			{
+				"$match": bson.M{"cateogories._id": oid},
+			},
+		}).All(&results)
+		if err != nil {
+			panic(err)
+		}
 	}
+
 	output, _ := json.Marshal(results)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)

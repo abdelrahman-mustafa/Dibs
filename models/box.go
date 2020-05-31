@@ -70,6 +70,6 @@ type (
 		Logo           string        `json:"logo,omitempty" bson:"logo,omitempty"`
 		Contact        string        `json:"contact,omitempty" bson:"contact,omitempty"`
 		Description    string        `json:"description,omitempty" bson:"description,omitempty"`
-		IsActive       int           `json:"isActive,omitempty" bson:"isActive"`
+		IsActive       int           `json:"isActive,omitempty" bson:"isActive,omitempty"`
 	}
 )
