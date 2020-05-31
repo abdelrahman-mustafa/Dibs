@@ -33,7 +33,9 @@ type (
 		Contact        string        `json:"contact,omitempty" bson:"contact,omitempty"`
 		Description    string        `json:"description,omitempty" bson:"description,omitempty"`
 		DescriptionAR  string        `json:"descriptionAR,omitempty" bson:"descriptionAR,omitempty"`
-		IsActive       bool          `json:"isActive,omitempty" bson:"isActive"`
+		IsActive       bool          `json:"isActive,omitempty" bson:"isActive,omitempty"`
+		MinBoxes       int           `json:"minBoxes,omitempty" bson:"minBoxes,omitempty"`
+		TomorrowBoxes  int           `json:"tomorrowBoxes,omitempty" bson:"tomorrowBoxes"`
 		Location       GeoJSON       `bson:"location,omitempty" json:"location,omitempty"`
 		Cateogories    []Cateogory   `json:"cateogories,omitempty" bson:"cateogories,omitempty"`
 	}
