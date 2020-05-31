@@ -109,11 +109,13 @@ func (ad BoxController) UpdateBox(w http.ResponseWriter, r *http.Request, p http
 	oid := bson.ObjectIdHex(p.ByName("id"))
 
 	if Box.Lat != 0 {
+		println("LAT", Box.Lat)
 		Box.Location.Type = "Point"
-		Box.Location.Coordinates = []float64{Box.Lat, Box.Long}
+		Box.Location.Coordinates = []float64{Box.Long, Box.Lat}
 	}
+	println("LAT", (Box.Location.Coordinates))
 
-	layOut := "2006-01-02T15:04:05Z"
+	layOut := "2006-01-02T15:04:05"
 	if Box.To != "" {
 		toTimeStamp, errTo := time.Parse(layOut, Box.To)
 
