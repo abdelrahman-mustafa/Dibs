@@ -20,8 +20,8 @@ type (
 		Username       string        `json:"username,omitempty" bson:"username,omitempty"`
 		Password       string        `json:"password,omitempty" bson:"password,omitempty"`
 		AvailableBoxes int           `json:"availableBoxes,omitempty" bson:"availableBoxes,omitempty"`
-		Long           float64       `json:"long,omitempty," bson:"-"`
-		Lat            float64       `json:"lat,omitempty" bson:"-"`
+		Long           float64       `json:"long,omitempty" bson:"long,omitempty"`
+		Lat            float64       `json:"lat,omitempty" bson:"lat,omitempty"`
 		From           string        `json:"from,omitempty" bson:"from,omitempty"`
 		To             string        `json:"to,omitempty" bson:"to,omitempty"`
 		FromHour       int           `json:"fromHour,omitempty" bson:"fromHour,omitempty"`

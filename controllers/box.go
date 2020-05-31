@@ -46,7 +46,7 @@ func (ad BoxController) CreateBox(w http.ResponseWriter, r *http.Request, p http
 
 	println("Data", Box.Password)
 
-	layOut := "2006-01-02T15:04:05"
+	layOut := "2006-01-02T15:04:05Z"
 	toTimeStamp, errTo := time.Parse(layOut, Box.To)
 
 	if errTo != nil {
@@ -113,7 +113,7 @@ func (ad BoxController) UpdateBox(w http.ResponseWriter, r *http.Request, p http
 		Box.Location.Coordinates = []float64{Box.Lat, Box.Long}
 	}
 
-	layOut := "YYYY-MM-DDTHH:MM:SS.SSS"
+	layOut := "2006-01-02T15:04:05Z"
 	if Box.To != "" {
 		toTimeStamp, errTo := time.Parse(layOut, Box.To)
 
