@@ -42,6 +42,9 @@ func (ad BoxController) CreateBox(w http.ResponseWriter, r *http.Request, p http
 	Box.Password = encryptedPassword
 	Box.Location.Type = "Point"
 	Box.Location.Coordinates = []float64{Box.Long, Box.Lat}
+	Box.MinBoxes = Box.AvailableBoxes
+	Box.TomorrowBoxes = Box.MinBoxes
+
 	// write struct of admni to DB
 
 	println("Data", Box.Password)
@@ -114,6 +117,10 @@ func (ad BoxController) UpdateBox(w http.ResponseWriter, r *http.Request, p http
 		Box.Location.Coordinates = []float64{Box.Long, Box.Lat}
 	}
 	println("LAT", (Box.Location.Coordinates))
+
+	if Box.AvailableBoxes != 0 {
+		Box.MinBoxes = Box.AvailableBoxes
+	}
 
 	layOut := "2006-01-02T15:04:05"
 	if Box.To != "" {
@@ -361,7 +368,6 @@ func (ad BoxController) GetBoxesByCateogory(w http.ResponseWriter, r *http.Reque
 
 	queryValues := r.URL.Query()
 
-	
 	lat, _ := strconv.ParseFloat(queryValues.Get("lat"), 64)
 	long, _ := strconv.ParseFloat(queryValues.Get("long"), 64)
 	var results []bson.M
