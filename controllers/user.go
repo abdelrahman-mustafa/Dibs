@@ -127,7 +127,7 @@ func (ad UserController) SigninWithFB(w http.ResponseWriter, r *http.Request, p 
 
 	//verify username
 	user := models.GetUserByFaceBookID(signIn.FacebookID, ad.session)
-	if user.Name != "" {
+	if user.Name == "" {
 		res := helpers.ResController{Res: w}
 
 		res.SendResponse("Not valid Facebook Account", 401)
