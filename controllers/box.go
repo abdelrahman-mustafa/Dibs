@@ -42,7 +42,7 @@ func (ad BoxController) CreateBox(w http.ResponseWriter, r *http.Request, p http
 	Box.Password = encryptedPassword
 	Box.Location.Type = "Point"
 	Box.Location.Coordinates = []float64{Box.Long, Box.Lat}
-	Box.MinBoxes = Box.AvailableBoxes
+	Box.AvailableBoxes = Box.MinBoxes
 	Box.TomorrowBoxes = Box.MinBoxes
 
 	// write struct of admni to DB
