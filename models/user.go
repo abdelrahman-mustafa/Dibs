@@ -10,15 +10,17 @@ import (
 type (
 	// User represents the structure of our resource
 	User struct {
-		ID        bson.ObjectId `json:"id,omitempty" bson:"_id"`
-		Name      string        `json:"name,omitempty" bson:"name,omitempty"`
-		Username  string        `json:"username,omitempty" bson:"username,omitempty"`
-		Password  string        `json:"password,omitempty" bson:"password,omitempty"`
-		Phone     string        `json:"phone,omitempty" bson:"phone,omitempty"`
-		Email     string        `json:"email,omitempty" bson:"email,omitempty"`
-		Area      string        `json:"area,omitempty" bson:"area,omitempty"`
-		Orders    []string      `json:"orders,omitempty" bson:"orders,omitempty"`
-		Favorites []string      `json:"favorites,omitempty" bson:"favorites,omitempty"`
+		ID           bson.ObjectId `json:"id,omitempty" bson:"_id"`
+		Name         string        `json:"name,omitempty" bson:"name,omitempty"`
+		Username     string        `json:"username,omitempty" bson:"username,omitempty"`
+		Password     string        `json:"password,omitempty" bson:"password,omitempty"`
+		Phone        string        `json:"phone,omitempty" bson:"phone,omitempty"`
+		Email        string        `json:"email,omitempty" bson:"email,omitempty"`
+		Area         string        `json:"area,omitempty" bson:"area,omitempty"`
+		FaceBookID   string        `json:"facebookID,omitempty" bson:"facebookID,omitempty"`
+		CreationType string        `json:"creationType,omitempty" bson:"creationType,omitempty"`
+		Orders       []string      `json:"orders,omitempty" bson:"orders,omitempty"`
+		Favorites    []string      `json:"favorites,omitempty" bson:"favorites,omitempty"`
 	}
 )
 
@@ -72,4 +74,19 @@ func GetUserByEmail(email string, Session *mgo.Session) bool {
 	}
 
 	return true
+}
+
+//GetUserByFaceBookID ... validates the id is for User
+func GetUserByFaceBookID(facebookID string, Session *mgo.Session) User {
+
+	fmt.Println("Start find the user", facebookID)
+	user := User{}
+	error := Session.DB("dibs").C("users").Find(bson.M{"facebookID": facebookID}).One(&user)
+	fmt.Println("User is found ", user)
+	fmt.Println("Start find the user", user.Username)
+	if error != nil {
+		return user
+	}
+
+	return user
 }

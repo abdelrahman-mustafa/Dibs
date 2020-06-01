@@ -25,6 +25,11 @@ type SignInAsUser struct {
 	Password string `json:"password" bson:"password"`
 }
 
+// SignInAsUserWithFB ... sign in as User
+type SignInAsUserWithFB struct {
+	FacebookID string `json:"facebookID" bson:"facebookID"`
+}
+
 type (
 
 	// UserController represents the controller for operating on the User resource
@@ -106,6 +111,32 @@ func (ad UserController) Signin(w http.ResponseWriter, r *http.Request, p httpro
 	token := helpers.GenerateToken(userID, "user")
 	Res := SignInResponse{}
 	Res.ID = userID
+	Res.Token = token
+	output, _ := json.Marshal(Res)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	fmt.Fprintf(w, "%s", output)
+}
+
+// SigninWithFB ... sign in as User
+func (ad UserController) SigninWithFB(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	fmt.Println("Start Sign in with facebook")
+	signIn := SignInAsUserWithFB{}
+	json.NewDecoder(r.Body).Decode(&signIn)
+
+	//verify username
+	user := models.GetUserByFaceBookID(signIn.FacebookID, ad.session)
+	if user.Name != "" {
+		res := helpers.ResController{Res: w}
+
+		res.SendResponse("Not valid Facebook Account", 401)
+		return
+	}
+
+	token := helpers.GenerateToken(user.ID, "user")
+	Res := SignInResponse{}
+	Res.ID = user.ID
 	Res.Token = token
 	output, _ := json.Marshal(Res)
 	w.Header().Set("Content-Type", "application/json")
