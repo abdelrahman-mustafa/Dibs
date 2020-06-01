@@ -374,7 +374,7 @@ func (ad BoxController) GetBoxesByCateogory(w http.ResponseWriter, r *http.Reque
 	oid := bson.ObjectIdHex(p.ByName("id"))
 
 	isExist, cat := models.IsCateogoryExist(p.ByName("id"), ad.session)
-	if isExist != false && cat.Name != "" && cat.Name != "In Your Hood" {
+	if isExist != false && cat.Name != "" && cat.Name == "In Your Hood" {
 		err := ad.session.DB("dibs").C("boxes").Pipe([]bson.M{
 			{
 				"$geoNear": bson.M{
@@ -388,7 +388,7 @@ func (ad BoxController) GetBoxesByCateogory(w http.ResponseWriter, r *http.Reque
 		if err != nil {
 			panic(err)
 		}
-	} else if isExist != false && cat.Name != "" && cat.Name != "JUST Missed" {
+	} else if isExist != false && cat.Name != "" && cat.Name == "JUST Missed" {
 		err := ad.session.DB("dibs").C("boxes").Pipe([]bson.M{
 			{
 				"$geoNear": bson.M{
