@@ -195,10 +195,10 @@ func (ad BoxController) UpdateActivationBox(w http.ResponseWriter, r *http.Reque
 }
 
 type queryBody struct {
-	From        int      `json:"from,omitempty"`
-	To          int      `json:"to,omitempty"`
-	Cateogories []string `json:"cateogories,omitempty"`
-	Name        string   `json:"name,omitempty"`
+	From int      `json:"from,omitempty"`
+	To   int      `json:"to,omitempty"`
+	Type []string `json:"type,omitempty"`
+	Name string   `json:"name,omitempty"`
 }
 
 // SearchBoxes ... get  box resource
@@ -229,12 +229,12 @@ func (ad BoxController) SearchBoxes(w http.ResponseWriter, r *http.Request, p ht
 	}
 	var cateogories []bson.ObjectId
 
-	if len(queryBox.Cateogories) > 0 {
+	if len(queryBox.Type) > 0 {
 
-		for _, item := range queryBox.Cateogories {
+		for _, item := range queryBox.Type {
 			cateogories = append(cateogories, bson.ObjectIdHex(item))
 		}
-		andQuery = append(andQuery, bson.M{"cateogories._id": bson.M{
+		andQuery = append(andQuery, bson.M{"type": bson.M{
 			"$in": cateogories,
 		}})
 	}

@@ -37,6 +37,7 @@ type (
 		MinBoxes       int           `json:"minBoxes,omitempty" bson:"minBoxes,omitempty"`
 		TomorrowBoxes  int           `json:"tomorrowBoxes,omitempty" bson:"tomorrowBoxes"`
 		Location       GeoJSON       `bson:"location,omitempty" json:"location,omitempty"`
+		Type           string        `json:"type,omitempty" bson:"type,omitempty"`
 		Cateogories    []Cateogory   `json:"cateogories,omitempty" bson:"cateogories,omitempty"`
 	}
 )
