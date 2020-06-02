@@ -84,6 +84,48 @@ func (ad UserController) CreateUser(w http.ResponseWriter, r *http.Request, p ht
 
 }
 
+//UpdateUser ... creates a new User resource
+func (ad UserController) UpdateUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	User := models.User{}
+	//prase json  of body and attach to admoin struct
+	json.NewDecoder(r.Body).Decode(&User)
+
+	//create id
+	User.ID = bson.NewObjectId()
+
+	if User.Password != "" {
+		encryptedPassword, er := helpers.Encrypt(User.Password)
+		if er != nil {
+			res := helpers.ResController{Res: w}
+			res.SendResponse("Something goes wrong", 500)
+			return
+		}
+		User.Password = encryptedPassword
+
+	}
+	oid := bson.ObjectIdHex(p.ByName("id"))
+	out := bson.M{"$set": User}
+
+	// write struct of admni to DB
+	ad.session.DB("dibs").C("users").UpdateId(oid, out)
+
+	// build response for user
+	token := helpers.GenerateToken(User.ID, "user")
+	Res := SignInResponse{}
+	Res.ID = User.ID
+	Res.Token = token
+	//
+
+	// convert struct to JSON
+	output, _ := json.Marshal(Res)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	fmt.Fprintf(w, "%s", output)
+
+}
+
 // Signin ... sign in as User
 func (ad UserController) Signin(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
