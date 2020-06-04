@@ -240,7 +240,7 @@ func (ad BoxController) SearchBoxes(w http.ResponseWriter, r *http.Request, p ht
 	}
 
 	if queryBox.Name != "" {
-		andQuery = append(andQuery, bson.M{"name": queryBox.Name})
+		andQuery = append(andQuery, bson.M{"name": bson.RegEx{Pattern: queryBox.Name, Options: "i"}})
 	}
 
 	var results []bson.M
