@@ -173,19 +173,11 @@ func (ad BoxController) UpdateActivationBox(w http.ResponseWriter, r *http.Reque
 	//prase json  of body and attach to admoin struct
 	json.NewDecoder(r.Body).Decode(&Box)
 
-	if Box.Password != "" {
-		encryptedPassword, _ := helpers.Encrypt(Box.Password)
-		Box.Password = encryptedPassword
-	}
 	oid := bson.ObjectIdHex(p.ByName("id"))
 	out := bson.M{"$set": Box}
 
-	if Box.Lat != 0 {
-		Box.Location.Type = "Point"
-		Box.Location.Coordinates = []float64{Box.Lat, Box.Long}
-	}
-
 	// write struct of admni to DB
+	println(Box.IsActive)
 	ad.session.DB("dibs").C("boxes").UpdateId(oid, out)
 
 	res := helpers.ResController{Res: w}
