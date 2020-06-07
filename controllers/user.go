@@ -110,19 +110,8 @@ func (ad UserController) UpdateUser(w http.ResponseWriter, r *http.Request, p ht
 	// write struct of admni to DB
 	ad.session.DB("dibs").C("users").UpdateId(oid, out)
 
-	// build response for user
-	token := helpers.GenerateToken(User.ID, "user")
-	Res := SignInResponse{}
-	Res.ID = User.ID
-	Res.Token = token
-	//
-
-	// convert struct to JSON
-	output, _ := json.Marshal(Res)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(201)
-	fmt.Fprintf(w, "%s", output)
+	res := helpers.ResController{Res: w}
+	res.SendResponse("The User is updated successfully", 200)
 
 }
 
