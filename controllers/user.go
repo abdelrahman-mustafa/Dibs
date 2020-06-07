@@ -92,8 +92,6 @@ func (ad UserController) UpdateUser(w http.ResponseWriter, r *http.Request, p ht
 	json.NewDecoder(r.Body).Decode(&User)
 
 	//create id
-	User.ID = bson.NewObjectId()
-
 	if User.Password != "" {
 		encryptedPassword, er := helpers.Encrypt(User.Password)
 		if er != nil {
