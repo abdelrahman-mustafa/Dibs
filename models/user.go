@@ -10,7 +10,7 @@ import (
 type (
 	// User represents the structure of our resource
 	User struct {
-		ID           bson.ObjectId `json:"id,omitempty" bson:"_id"`
+		ID           bson.ObjectId `json:"id,omitempty" bson:"_id,omitempty"`
 		Name         string        `json:"name,omitempty" bson:"name,omitempty"`
 		Username     string        `json:"username,omitempty" bson:"username,omitempty"`
 		Password     string        `json:"password,omitempty" bson:"password,omitempty"`

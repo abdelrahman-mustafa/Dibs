@@ -102,12 +102,16 @@ func (ad UserController) UpdateUser(w http.ResponseWriter, r *http.Request, p ht
 		User.Password = encryptedPassword
 
 	}
+
+	println(p.ByName("id"))
 	oid := bson.ObjectIdHex(p.ByName("id"))
 	out := bson.M{"$set": User}
 
 	// write struct of admni to DB
-	ad.session.DB("dibs").C("users").UpdateId(oid, out)
-
+	err := ad.session.DB("dibs").C("users").UpdateId(oid, out)
+	if err != nil {
+		panic(err)
+	}
 	res := helpers.ResController{Res: w}
 	res.SendResponse("The User is updated successfully", 200)
 
