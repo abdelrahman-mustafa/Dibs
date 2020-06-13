@@ -198,6 +198,40 @@ func (ad UserController) GetUser(w http.ResponseWriter, r *http.Request, p httpr
 	fmt.Fprintf(w, "%s", output)
 }
 
+// GetUserFavorites ... GetUser data
+func (ad UserController) GetUserFavorites(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	fmt.Println("Start Get user data")
+
+	// get user id from header
+	id := p.ByName("id")
+	fmt.Println("Start Get from id  is ", id)
+
+	user := models.GetUser(id, ad.session)
+	if user.Username == "" {
+		res := helpers.ResController{Res: w}
+		res.SendResponse("Not Fount", 404)
+		return
+	}
+
+	var results []bson.M
+
+	ad.session.DB("dibs").C("users").Pipe([]bson.M{
+		{
+			"$lookup": bson.M{
+				"from":         "boxes",
+				"localField":   "favorites",
+				"foreignField": "_id",
+				"as":           "favorites",
+			},
+		},
+	}).All(&results)
+	output, _ := json.Marshal(results)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	fmt.Fprintf(w, "%s", output)
+}
+
 // IsUserExistByEmail ... IsUserExistByEmail data
 func (ad UserController) IsUserExistByEmail(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
