@@ -23,6 +23,12 @@ type (
 	}
 )
 
+//BoxSignIn ...
+type BoxSignIn struct {
+	Username string `json:"username" bson:"username"`
+	Password string `json:"password" bson:"password"`
+}
+
 // NewBoxController ... returns a instance of UserController structure
 func NewBoxController(session *mgo.Session) *BoxController {
 	return &BoxController{session}
@@ -34,6 +40,14 @@ func (ad BoxController) CreateBox(w http.ResponseWriter, r *http.Request, p http
 	Box := models.Box{}
 	//prase json  of body and attach to admoin struct
 	json.NewDecoder(r.Body).Decode(&Box)
+
+	isExist, _, _ := models.IsBoxExist(Box.Username, ad.session)
+	if isExist {
+		w.Header().Set("Content-Type", "appliBoxion/json")
+		w.WriteHeader(401)
+		fmt.Fprintf(w, "%s", "There is a user with that name please create a unique username")
+		return
+	}
 
 	//create id
 	Box.ID = bson.NewObjectId()
@@ -86,6 +100,38 @@ func (ad BoxController) CreateBox(w http.ResponseWriter, r *http.Request, p http
 
 	res := helpers.ResController{Res: w}
 	res.SendResponse("The Box is created successfully", 200)
+	// fmt.Fprintf(w, "%s", uj)
+}
+
+// SignIn ... updates a new Box resource
+func (ad BoxController) SignIn(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	boxAdmin := SignIn{}
+	json.NewDecoder(r.Body).Decode(&boxAdmin)
+	isExist, pass, id := models.IsBoxExist(boxAdmin.Username, ad.session)
+	if isExist == false {
+		w.Header().Set("Content-Type", "appliBoxion/json")
+		w.WriteHeader(401)
+		fmt.Fprintf(w, "%s", "Not valid Box")
+		return
+	}
+	err := helpers.Compare(pass, boxAdmin.Password)
+	if err != nil {
+		res := helpers.ResController{Res: w}
+
+		res.SendResponse("Not valid password", 401)
+		return
+	}
+
+	token := helpers.GenerateToken(id, "box")
+	Res := SignInResponse{}
+	Res.ID = id
+	Res.Token = token
+	output, _ := json.Marshal(Res)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	fmt.Fprintf(w, "%s", output)
+
 	// fmt.Fprintf(w, "%s", uj)
 }
 

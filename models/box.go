@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -52,6 +54,24 @@ func IsBox(id string, Session *mgo.Session) bool {
 		return true
 	}
 	return false
+
+}
+
+//IsBoxExist ... validates the username is for box
+func IsBoxExist(username string, Session *mgo.Session) (bool, string, bson.ObjectId) {
+
+	fmt.Println("Start find the box", username)
+	box := Box{}
+	error := Session.DB("dibs").C("boxes").Find(bson.M{"username": username}).One(&box)
+	fmt.Println("Box is found ", box)
+	if error != nil {
+		return false, "", ""
+	}
+	if box.Username != "" {
+		return true, box.Password, box.ID
+
+	}
+	return false, "", ""
 
 }
 
