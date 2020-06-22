@@ -232,6 +232,62 @@ func (ad UserController) GetUserFavorites(w http.ResponseWriter, r *http.Request
 	fmt.Fprintf(w, "%s", output)
 }
 
+// AddUserFavorite ... GetUser data
+func (ad UserController) AddUserFavorite(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	fmt.Println("Start Get user data")
+
+	// get user id from header
+	id := p.ByName("userID")
+	fmt.Println("Start Get from id  is ", id)
+
+	user := models.GetUser(id, ad.session)
+	if user.Username == "" {
+		res := helpers.ResController{Res: w}
+		res.SendResponse("Not Fount", 404)
+		return
+	}
+	user.Favorites = append(user.Favorites, p.ByName("id"))
+	out := bson.M{"$set": user}
+
+	oid := bson.ObjectIdHex(id)
+
+	ad.session.DB("dibs").C("users").UpdateId(oid, out)
+	res := helpers.ResController{Res: w}
+	res.SendResponse("The Box is added to Favorites", 200)
+}
+
+// DeleteUserFavorite ... GetUser data
+func (ad UserController) DeleteUserFavorite(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	fmt.Println("Start Get user data")
+
+	// get user id from header
+	userid := p.ByName("userID")
+	fmt.Println("Start Get from id  is ", userid)
+
+	user := models.GetUser(userid, ad.session)
+	if user.Username == "" {
+		res := helpers.ResController{Res: w}
+		res.SendResponse("Not Fount", 404)
+		return
+	}
+	id := p.ByName("id")
+	for i, item := range user.Favorites {
+		if id == item {
+			user.Favorites = append(user.Favorites[:i], user.Favorites[i+1:]...)
+			break
+		}
+	}
+	out := bson.M{"$set": user}
+
+	oid := bson.ObjectIdHex(id)
+
+	ad.session.DB("dibs").C("users").UpdateId(oid, out)
+	res := helpers.ResController{Res: w}
+	res.SendResponse("The Box is deleted to Favorites", 200)
+}
+
 // IsUserExistByEmail ... IsUserExistByEmail data
 func (ad UserController) IsUserExistByEmail(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
