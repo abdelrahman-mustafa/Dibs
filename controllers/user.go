@@ -275,13 +275,16 @@ func (ad UserController) DeleteUserFavorite(w http.ResponseWriter, r *http.Reque
 	id := p.ByName("id")
 	for i, item := range user.Favorites {
 		if id == item {
+			fmt.Println("Found")
+			fmt.Println(user.Favorites)
 			user.Favorites = append(user.Favorites[:i], user.Favorites[i+1:]...)
+			fmt.Println(user.Favorites)
 			break
 		}
 	}
 	out := bson.M{"$set": user}
 
-	oid := bson.ObjectIdHex(id)
+	oid := bson.ObjectIdHex(userid)
 
 	ad.session.DB("dibs").C("users").UpdateId(oid, out)
 	res := helpers.ResController{Res: w}
