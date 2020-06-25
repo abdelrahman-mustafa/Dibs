@@ -10,17 +10,17 @@ import (
 type (
 	// User represents the structure of our resource
 	User struct {
-		ID           bson.ObjectId `json:"id,omitempty" bson:"_id,omitempty"`
-		Name         string        `json:"name,omitempty" bson:"name,omitempty"`
-		Username     string        `json:"username,omitempty" bson:"username,omitempty"`
-		Password     string        `json:"password,omitempty" bson:"password,omitempty"`
-		Phone        string        `json:"phone,omitempty" bson:"phone,omitempty"`
-		Email        string        `json:"email,omitempty" bson:"email,omitempty"`
-		Area         string        `json:"area,omitempty" bson:"area,omitempty"`
-		FaceBookID   string        `json:"facebookID,omitempty" bson:"facebookID,omitempty"`
-		CreationType string        `json:"creationType,omitempty" bson:"creationType,omitempty"`
-		Orders       []string      `json:"orders,omitempty" bson:"orders,omitempty"`
-		Favorites    []string      `json:"favorites,omitempty" bson:"favorites,omitempty"`
+		ID           bson.ObjectId   `json:"id,omitempty" bson:"_id,omitempty"`
+		Name         string          `json:"name,omitempty" bson:"name,omitempty"`
+		Username     string          `json:"username,omitempty" bson:"username,omitempty"`
+		Password     string          `json:"password,omitempty" bson:"password,omitempty"`
+		Phone        string          `json:"phone,omitempty" bson:"phone,omitempty"`
+		Email        string          `json:"email,omitempty" bson:"email,omitempty"`
+		Area         string          `json:"area,omitempty" bson:"area,omitempty"`
+		FaceBookID   string          `json:"facebookID,omitempty" bson:"facebookID,omitempty"`
+		CreationType string          `json:"creationType,omitempty" bson:"creationType,omitempty"`
+		Orders       []bson.ObjectId `json:"orders,omitempty" bson:"orders,omitempty"`
+		Favorites    []bson.ObjectId `json:"favorites,omitempty" bson:"favorites,omitempty"`
 	}
 )
 

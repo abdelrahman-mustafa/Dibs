@@ -225,6 +225,11 @@ func (ad UserController) GetUserFavorites(w http.ResponseWriter, r *http.Request
 				"as":           "favorites",
 			},
 		},
+		{
+			"$match": bson.M{
+				"_id": bson.ObjectIdHex(id),
+			},
+		},
 	}).All(&results)
 	output, _ := json.Marshal(results)
 	w.Header().Set("Content-Type", "application/json")
@@ -247,7 +252,7 @@ func (ad UserController) AddUserFavorite(w http.ResponseWriter, r *http.Request,
 		res.SendResponse("Not Fount", 404)
 		return
 	}
-	user.Favorites = append(user.Favorites, p.ByName("id"))
+	user.Favorites = append(user.Favorites, bson.ObjectIdHex(p.ByName("id")))
 	out := bson.M{"$set": user}
 
 	oid := bson.ObjectIdHex(id)
@@ -272,7 +277,7 @@ func (ad UserController) DeleteUserFavorite(w http.ResponseWriter, r *http.Reque
 		res.SendResponse("Not Fount", 404)
 		return
 	}
-	id := p.ByName("id")
+	id := bson.ObjectIdHex(p.ByName("id"))
 	for i, item := range user.Favorites {
 		if id == item {
 			fmt.Println("Found")
