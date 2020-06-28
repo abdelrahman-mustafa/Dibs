@@ -376,7 +376,7 @@ func (ad BoxController) GetBox(w http.ResponseWriter, r *http.Request, p httprou
 	// validate id and return the object of id
 
 	// edit  the new changes in the object
-	// update the doc in DB
+	// update the doc in D
 	isExist := models.IsBox(p.ByName("id"), ad.session)
 	if isExist == false {
 		w.Header().Set("Content-Type", "appliBoxion/json")
@@ -391,7 +391,18 @@ func (ad BoxController) GetBox(w http.ResponseWriter, r *http.Request, p httprou
 	oid := bson.ObjectIdHex(p.ByName("id"))
 	// write struct of admni to DB
 	ad.session.DB("dibs").C("boxes").FindId(oid).One(&Box)
-
+	// check if it is favorite for user
+	println("used Id", bson.ObjectIdHex(r.Header.Get("userID")))
+	user := models.GetUser(r.Header.Get("userID"), ad.session)
+	if user.Username != "" {
+		Box.IsFavorite = false
+		for _, item := range user.Favorites {
+			if item == oid {
+				Box.IsFavorite = true
+				break
+			}
+		}
+	}
 	// convert struct to JSON
 	output, _ := json.Marshal(Box)
 	w.Header().Set("Content-Type", "appliBoxion/json")

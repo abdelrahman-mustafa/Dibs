@@ -13,7 +13,7 @@ func Authenticate(next httprouter.Handle) httprouter.Handle {
 		tokn := r.Header.Get("Authorization")
 		tokn = strings.Replace(tokn, "bearer ", "", 1)
 
-		isValid := VerifyToken(tokn)
+		isValid, data := VerifyToken(tokn)
 		if isValid != true {
 			w.WriteHeader(404)
 			w.Write([]byte("Not Authorized"))
@@ -21,7 +21,7 @@ func Authenticate(next httprouter.Handle) httprouter.Handle {
 		}
 
 		// find user if founct go to next if not return back
-
+		r.Header.Add("userID", data.Username.Hex())
 		next(w, r, ps)
 
 	}

@@ -41,6 +41,7 @@ type (
 		Location       GeoJSON       `bson:"location,omitempty" json:"location,omitempty"`
 		Type           string        `json:"type,omitempty" bson:"type,omitempty"`
 		Cateogories    []Cateogory   `json:"cateogories,omitempty" bson:"cateogories,omitempty"`
+		IsFavorite     bool          `json:"isFavorite,omitempty"`
 	}
 )
 
