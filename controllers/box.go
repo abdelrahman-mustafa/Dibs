@@ -419,7 +419,7 @@ func (ad BoxController) GetBoxesByCateogory(w http.ResponseWriter, r *http.Reque
 
 	lat, _ := strconv.ParseFloat(queryValues.Get("lat"), 64)
 	long, _ := strconv.ParseFloat(queryValues.Get("long"), 64)
-	var results []bson.M
+	results := []models.Box{}
 	oid := bson.ObjectIdHex(p.ByName("id"))
 
 	isExist, cat := models.IsCateogoryExist(p.ByName("id"), ad.session)
@@ -472,6 +472,19 @@ func (ad BoxController) GetBoxesByCateogory(w http.ResponseWriter, r *http.Reque
 		}
 	}
 
+	user := models.GetUser(r.Header.Get("userID"), ad.session)
+	if user.Username != "" {
+		for _, box := range results {
+			box.IsFavorite = false
+			for _, item := range user.Favorites {
+				if item == box.ID {
+					box.IsFavorite = true
+					break
+				}
+			}
+		}
+
+	}
 	output, _ := json.Marshal(results)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
