@@ -281,7 +281,7 @@ func (ad BoxController) SearchBoxes(w http.ResponseWriter, r *http.Request, p ht
 		andQuery = append(andQuery, bson.M{"name": bson.RegEx{Pattern: queryBox.Name, Options: "i"}})
 	}
 
-	var results []bson.M
+	results := []models.Box{}
 	query = bson.M{
 		"$and": andQuery,
 	}
@@ -300,6 +300,19 @@ func (ad BoxController) SearchBoxes(w http.ResponseWriter, r *http.Request, p ht
 
 	if err != nil {
 		panic(err)
+	}
+	user := models.GetUser(r.Header.Get("userID"), ad.session)
+	if user.Username != "" {
+		for _, box := range results {
+			box.IsFavorite = false
+			for _, item := range user.Favorites {
+				if item == box.ID {
+					box.IsFavorite = true
+					break
+				}
+			}
+		}
+
 	}
 	output, _ := json.Marshal(results)
 	w.Header().Set("Content-Type", "application/json")
