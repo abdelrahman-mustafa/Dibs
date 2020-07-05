@@ -42,6 +42,7 @@ type (
 		Type           string        `json:"type,omitempty" bson:"type,omitempty"`
 		Cateogories    []Cateogory   `json:"cateogories,omitempty" bson:"cateogories,omitempty"`
 		IsFavorite     bool          `json:"isFavorite,omitempty"`
+		Distance       float64       `json:"distance,omitempty"`
 	}
 )
 
