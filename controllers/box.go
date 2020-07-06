@@ -282,6 +282,8 @@ func (ad BoxController) SearchBoxes(w http.ResponseWriter, r *http.Request, p ht
 	}
 
 	results := []models.Box{}
+	Boxv := []models.Box{}
+
 	query = bson.M{
 		"$and": andQuery,
 	}
@@ -311,10 +313,11 @@ func (ad BoxController) SearchBoxes(w http.ResponseWriter, r *http.Request, p ht
 					break
 				}
 			}
+			Boxv = append(Boxv, box)
 		}
 
 	}
-	output, _ := json.Marshal(results)
+	output, _ := json.Marshal(Boxv)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 	fmt.Fprintf(w, "%s", output)
@@ -484,6 +487,7 @@ func (ad BoxController) GetBoxesByCateogory(w http.ResponseWriter, r *http.Reque
 			panic(err)
 		}
 	}
+	Boxv := []models.Box{}
 
 	user := models.GetUser(r.Header.Get("userID"), ad.session)
 	if user.Username != "" {
@@ -495,10 +499,12 @@ func (ad BoxController) GetBoxesByCateogory(w http.ResponseWriter, r *http.Reque
 					break
 				}
 			}
+			Boxv = append(Boxv, box)
+
 		}
 
 	}
-	output, _ := json.Marshal(results)
+	output, _ := json.Marshal(Boxv)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 	fmt.Fprintf(w, "%s", output)
