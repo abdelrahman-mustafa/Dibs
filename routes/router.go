@@ -12,6 +12,7 @@ func InitRouter(db *mgo.Session) *httprouter.Router {
 	InitAdmin(R, db)
 	InitCat(R, db)
 	InitUser(R, db)
+	InitOrder(R, db)
 
 	return R
 }
