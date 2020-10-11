@@ -8,7 +8,7 @@ type (
 	//Order ...
 	Order struct {
 		ID        bson.ObjectId `json:"id,omitempty" bson:"_id,omitempty"`
-		Box       bson.ObjectId `json:"box" bson:"box,omitempty"`
+		Box       bson.ObjectId `json:"box" bson:"box"`
 		Status    string        `json:"status" bson:"status,omitempty"`
 		Price     int           `json:"price" bson:"price,omitempty"`
 		PaymentID int           `json:"paymentId" bson:"paymentId"`
