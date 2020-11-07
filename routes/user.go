@@ -17,6 +17,7 @@ func InitUser(R *httprouter.Router, session *mgo.Session) {
 	R.GET("/user/info/:id", helpers.Authenticate(User.GetUser))
 	R.GET("/user/favorites/:id", helpers.Authenticate(User.GetUserFavorites))
 	R.PUT("/user/favorites/add/:userID/:id", helpers.Authenticate(User.AddUserFavorite))
+	R.GET("/user/orders/:id", helpers.Authenticate(User.GetUserOrders))
 	R.DELETE("/user/favorites/remove/:userID/:id", helpers.Authenticate(User.DeleteUserFavorite))
 	R.HEAD("/user/:email", User.IsUserExistByEmail)
 

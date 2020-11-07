@@ -237,6 +237,45 @@ func (ad UserController) GetUserFavorites(w http.ResponseWriter, r *http.Request
 	fmt.Fprintf(w, "%s", output)
 }
 
+// GetUserOrders ... GetUser data
+func (ad UserController) GetUserOrders(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	fmt.Println("Start Get user data")
+
+	// get user id from header
+	id := p.ByName("id")
+	fmt.Println("Start Get from id  is ", id)
+
+	user := models.GetUser(id, ad.session)
+	if user.Username == "" {
+		res := helpers.ResController{Res: w}
+		res.SendResponse("Not Fount", 404)
+		return
+	}
+
+	var results []bson.M
+
+	ad.session.DB("dibs").C("users").Pipe([]bson.M{
+		{
+			"$lookup": bson.M{
+				"from":         "orders",
+				"localField":   "orders",
+				"foreignField": "_id",
+				"as":           "orders",
+			},
+		},
+		{
+			"$match": bson.M{
+				"_id": bson.ObjectIdHex(id),
+			},
+		},
+	}).All(&results)
+	output, _ := json.Marshal(results)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	fmt.Fprintf(w, "%s", output)
+}
+
 // AddUserFavorite ... GetUser data
 func (ad UserController) AddUserFavorite(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 

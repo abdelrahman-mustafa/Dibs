@@ -45,7 +45,7 @@ func (ad OrderController) CreateOrder(w http.ResponseWriter, r *http.Request, p 
 
 	//create id
 	Order.ID = bson.NewObjectId()
-	Order.Status = "inprogress"
+	Order.Status = "Done"
 
 	newPay := helpers.Pay{
 		Email:     user.Email,
@@ -59,7 +59,6 @@ func (ad OrderController) CreateOrder(w http.ResponseWriter, r *http.Request, p 
 	frame := newPay.BuildIFrame()
 
 	Order.PaymentID = newPay.OrderID
-
 	err := ad.session.DB("dibs").C("orders").Insert(Order)
 	ad.session.DB("dibs").C("users").UpdateId(userid, bson.M{
 		"$addToSet": bson.M{
@@ -74,5 +73,49 @@ func (ad OrderController) CreateOrder(w http.ResponseWriter, r *http.Request, p 
 	// here apply the payment implementation
 
 	res.SendResponse(frame, 200)
-	// fmt.Fprintf(w, "%s", uj)
 }
+
+// GetOrder ... creates a new Order resource
+func (ad OrderController) GetOrder(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	// get user id from header
+	userid := p.ByName("userID")
+	fmt.Println("Start Get from id  is ", userid)
+
+	user := models.GetUser(userid, ad.session)
+	if user.Username == "" {
+		res := helpers.ResController{Res: w}
+		res.SendResponse("Not Fount", 404)
+		return
+	}
+	oid := bson.ObjectIdHex(p.ByName("id"))
+
+	Order := &models.Order{}
+	err := ad.session.DB("dibs").C("orders").FindId(oid).One(&Order)
+	res := helpers.ResController{Res: w}
+
+	if err != nil {
+		res.SendResponse("Internal Server Error", 504)
+	}
+	// here apply the payment implementation
+	output, _ := json.Marshal(Order)
+
+	res.SendResponse(string(output), 200)
+}
+
+// //UpdateOrder ... creates a new Order resource
+// func (ad OrderController) UpdateOrder(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+// 	// query := r.URL.Query()
+
+// 	// Order := &models.Order{}
+// 	// err := ad.session.DB("dibs").C("orders").FindId(oid).One(&Order)
+// 	// res := helpers.ResController{Res: w}
+
+// 	// if err != nil {
+// 	// 	res.SendResponse("Internal Server Error", 504)
+// 	// }
+// 	// // here apply the payment implementation
+// 	// output, _ := json.Marshal(Order)
+
+// 	// res.SendResponse(string(output), 200)
+// }
