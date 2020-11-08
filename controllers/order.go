@@ -30,13 +30,17 @@ func NewOrderController(session *mgo.Session) *OrderController {
 func (ad OrderController) CreateOrder(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 	// get user id from header
-	userid := p.ByName("userID")
+	userid := r.Header.Get("userID")
 	fmt.Println("Start Get from id  is ", userid)
-
+	if userid == "" {
+		res := helpers.ResController{Res: w}
+		res.SendResponse("Not Authorized", 404)
+		return
+	}
 	user := models.GetUser(userid, ad.session)
 	if user.Username == "" {
 		res := helpers.ResController{Res: w}
-		res.SendResponse("Not Fount", 404)
+		res.SendResponse("Not Authorized", 404)
 		return
 	}
 	Order := models.Order{}
