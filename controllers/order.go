@@ -43,27 +43,32 @@ func (ad OrderController) CreateOrder(w http.ResponseWriter, r *http.Request, p 
 		res.SendResponse("Not Authorized", 404)
 		return
 	}
+	if user.Phone == "" {
+		res := helpers.ResController{Res: w}
+		res.SendResponse("Please update your phone number", 403)
+		return
+	}
 	Order := models.Order{}
 	//prase json  of body and attach to admoin struct
 	json.NewDecoder(r.Body).Decode(&Order)
 
-	isExist := models.IsBox(Order.Box, ad.session)
-	if isExist == false {
+	Box := models.Box{}
+
+	oid := Order.Box
+
+	// write struct of admni to DB
+	ad.session.DB("dibs").C("boxes").FindId(oid).One(&Box)
+
+	if Box.Name == "" {
 		w.Header().Set("Content-Type", "appliBoxion/json")
 		w.WriteHeader(401)
 		fmt.Fprintf(w, "%s", "Not valid Box")
 		return
 	}
-	Box := models.Box{}
-
-	oid := bson.ObjectIdHex(Order.Box)
-	// write struct of admni to DB
-	ad.session.DB("dibs").C("boxes").FindId(oid).One(&Box)
-
 	//create id
 	Order.ID = bson.NewObjectId()
 	Order.Status = "Done"
-	if Order.Count != nil {
+	if Order.Count == 0 {
 		Order.Count = 1
 	}
 	Order.Price = Box.Price * Order.Count * 100
@@ -72,7 +77,7 @@ func (ad OrderController) CreateOrder(w http.ResponseWriter, r *http.Request, p 
 		Email:     user.Email,
 		FirstName: user.Username,
 		LastName:  user.Username,
-		Phone:     "201022876977",
+		Phone:     user.Phone,
 	}
 	newPay.PayAuth()
 	newPay.PlaceOrder(80, 11)
@@ -92,7 +97,7 @@ func (ad OrderController) CreateOrder(w http.ResponseWriter, r *http.Request, p 
 		orderID string
 	}{
 		frame,
-		Order.ID,
+		Order.ID.String(),
 	})
 
 	if err != nil {

@@ -27,11 +27,11 @@ type payResponse struct {
 }
 
 type payOrder struct {
-	Token           string `json:"auth_token"`
-	DeliveryNeeded  string `json:"delivery_needed"`
-	Amount          string `json:"amount_cents"`
-	Currency        string `json:"currency"`
-	Items           []int  `json:"items"`
+	Token          string `json:"auth_token"`
+	DeliveryNeeded string `json:"delivery_needed"`
+	Amount         string `json:"amount_cents"`
+	Currency       string `json:"currency"`
+	Items          []int  `json:"items"`
 }
 
 type billingData struct {
@@ -51,13 +51,13 @@ type billingData struct {
 }
 
 type tokenOrder struct {
-	Token         string `json:"auth_token"`
-	Amount        string `json:"amount_cents"`
-	Currency      string `json:"currency"`
-	OrderID       int    `json:"order_id"`
-	Expiration    int    `json:"expiration"`
-	IntegrationID int    `json:"integration_id"`
-	BillingData   billingData  `json:"billing_data"`
+	Token         string      `json:"auth_token"`
+	Amount        string      `json:"amount_cents"`
+	Currency      string      `json:"currency"`
+	OrderID       int         `json:"order_id"`
+	Expiration    int         `json:"expiration"`
+	IntegrationID int         `json:"integration_id"`
+	BillingData   billingData `json:"billing_data"`
 }
 type orderData struct {
 	ID int `json:"id"`
@@ -101,11 +101,11 @@ func (p *Pay) PlaceOrder(price int, orderID int) {
 	fmt.Println("URL:>", url)
 	emptyArr := make([]int, 0)
 	request := payOrder{
-		Amount:          strconv.Itoa(price),
-		Currency:        "EGP",
-		DeliveryNeeded:  "false",
-		Token:           p.Token,
-		Items:           emptyArr,
+		Amount:         strconv.Itoa(price),
+		Currency:       "EGP",
+		DeliveryNeeded: "false",
+		Token:          p.Token,
+		Items:          emptyArr,
 	}
 	jsonStr, _ := json.Marshal(&request)
 	fmt.Println("Req Body Of Order", string(jsonStr))
@@ -142,17 +142,16 @@ func (p *Pay) GetToken() {
 		p.Phone,
 		"NA",
 		"NA",
-                "NA",
-                "NA",
-                "NA",
-                "NA",
-                "NA",
-                "NA",
-                "NA",
-
+		"NA",
+		"NA",
+		"NA",
+		"NA",
+		"NA",
+		"NA",
+		"NA",
 	}
 	request := &tokenOrder{
-		Amount:        "100",
+		Amount:        p.PayOrder.Amount,
 		BillingData:   billing,
 		Currency:      "EGP",
 		Token:         p.Token,
