@@ -55,10 +55,10 @@ func (ad OrderController) CreateOrder(w http.ResponseWriter, r *http.Request, p 
 		Email:     user.Email,
 		FirstName: user.Username,
 		LastName:  user.Username,
-		Phone:     user.Phone,
+		Phone:     "201022876977",
 	}
 	newPay.PayAuth()
-	newPay.PlaceOrder(Order.Price, 11)
+	newPay.PlaceOrder(80, 11)
 	newPay.GetToken()
 	frame := newPay.BuildIFrame()
 
