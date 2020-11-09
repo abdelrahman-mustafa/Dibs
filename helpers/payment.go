@@ -31,7 +31,6 @@ type payOrder struct {
 	DeliveryNeeded  string `json:"delivery_needed"`
 	Amount          string `json:"amount_cents"`
 	Currency        string `json:"currency"`
-	MerchantOrderID int    `json:"merchant_order_id"`
 	Items           []int  `json:"items"`
 }
 
@@ -58,7 +57,7 @@ type tokenOrder struct {
 	OrderID       int    `json:"order_id"`
 	Expiration    int    `json:"expiration"`
 	IntegrationID int    `json:"integration_id"`
-	BillingData   billingData
+	BillingData   billingData  `json:"billing_data"`
 }
 type orderData struct {
 	ID int `json:"id"`
@@ -103,7 +102,6 @@ func (p *Pay) PlaceOrder(price int, orderID int) {
 	emptyArr := make([]int, 0)
 	request := payOrder{
 		Amount:          strconv.Itoa(price),
-		MerchantOrderID: 14,
 		Currency:        "EGP",
 		DeliveryNeeded:  "false",
 		Token:           p.Token,
@@ -138,13 +136,23 @@ func (p *Pay) GetToken() {
 	fmt.Println("URL:>", url)
 
 	billing := billingData{
-		Email:     p.Email,
-		FirstName: p.FirstName,
-		LastName:  p.LastName,
-		Phone:     p.Phone,
+		p.Email,
+		p.FirstName,
+		p.LastName,
+		p.Phone,
+		"NA",
+		"NA",
+                "NA",
+                "NA",
+                "NA",
+                "NA",
+                "NA",
+                "NA",
+                "NA",
+
 	}
 	request := &tokenOrder{
-		Amount:        p.PayOrder.Amount,
+		Amount:        "100",
 		BillingData:   billing,
 		Currency:      "EGP",
 		Token:         p.Token,
@@ -154,6 +162,7 @@ func (p *Pay) GetToken() {
 	}
 
 	jsonStr, _ := json.Marshal(request)
+	fmt.Println("TTEEEEEEEEEEEEE", string(jsonStr))
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 	req.Header.Set("X-Custom-Header", "myvalue")
 	req.Header.Set("Content-Type", "application/json")
