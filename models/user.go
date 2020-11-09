@@ -14,8 +14,8 @@ type (
 		Name         string          `json:"name,omitempty" bson:"name,omitempty"`
 		Username     string          `json:"username,omitempty" bson:"username,omitempty"`
 		Password     string          `json:"password,omitempty" bson:"password,omitempty"`
-		Phone        string          `json:"phone,omitempty" bson:"phone,omitempty"`
-		Email        string          `json:"email,omitempty" bson:"email,omitempty"`
+		Phone        string          `json:"phone" bson:"phone"`
+		Email        string          `json:"email" bson:"email"`
 		Area         string          `json:"area,omitempty" bson:"area,omitempty"`
 		FaceBookID   string          `json:"facebookID,omitempty" bson:"facebookID,omitempty"`
 		CreationType string          `json:"creationType,omitempty" bson:"creationType,omitempty"`

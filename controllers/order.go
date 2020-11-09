@@ -47,9 +47,26 @@ func (ad OrderController) CreateOrder(w http.ResponseWriter, r *http.Request, p 
 	//prase json  of body and attach to admoin struct
 	json.NewDecoder(r.Body).Decode(&Order)
 
+	isExist := models.IsBox(Order.Box, ad.session)
+	if isExist == false {
+		w.Header().Set("Content-Type", "appliBoxion/json")
+		w.WriteHeader(401)
+		fmt.Fprintf(w, "%s", "Not valid Box")
+		return
+	}
+	Box := models.Box{}
+
+	oid := bson.ObjectIdHex(Order.Box)
+	// write struct of admni to DB
+	ad.session.DB("dibs").C("boxes").FindId(oid).One(&Box)
+
 	//create id
 	Order.ID = bson.NewObjectId()
 	Order.Status = "Done"
+	if Order.Count != nil {
+		Order.Count = 1
+	}
+	Order.Price = Box.Price * Order.Count * 100
 
 	newPay := helpers.Pay{
 		Email:     user.Email,
@@ -70,13 +87,19 @@ func (ad OrderController) CreateOrder(w http.ResponseWriter, r *http.Request, p 
 		},
 	})
 	res := helpers.ResController{Res: w}
+	output, _ := json.Marshal(struct {
+		iframe  string
+		orderID string
+	}{
+		frame,
+		Order.ID,
+	})
 
 	if err != nil {
 		res.SendResponse("Internal Server Error", 504)
 	}
 	// here apply the payment implementation
-
-	res.SendResponse(frame, 200)
+	res.SendResponse(string(output), 200)
 }
 
 // GetOrder ... creates a new Order resource
