@@ -71,6 +71,13 @@ func (ad OrderController) CreateOrder(w http.ResponseWriter, r *http.Request, p 
 	if Order.Count == 0 {
 		Order.Count = 1
 	}
+	if Box.AvailableBoxes < Order.Count {
+		w.Header().Set("Content-Type", "appliBoxion/json")
+		w.WriteHeader(401)
+		fmt.Fprintf(w, "%s", "Not valid Box Count")
+		return
+	}
+
 	Order.Price = Box.Price * Order.Count * 100
 
 	newPay := helpers.Pay{
@@ -83,7 +90,11 @@ func (ad OrderController) CreateOrder(w http.ResponseWriter, r *http.Request, p 
 	newPay.PlaceOrder(80, 11)
 	newPay.GetToken()
 	frame := newPay.BuildIFrame()
-
+	// update box
+	Box.AvailableBoxes = Box.AvailableBoxes - Order.Count
+	out := bson.M{"$set": Box}
+	// write struct of admni to DB
+	ad.session.DB("dibs").C("boxes").UpdateId(oid, out)
 	Order.PaymentID = newPay.OrderID
 	err := ad.session.DB("dibs").C("orders").Insert(Order)
 	ad.session.DB("dibs").C("users").UpdateId(userid, bson.M{
