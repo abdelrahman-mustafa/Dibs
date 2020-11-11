@@ -71,12 +71,12 @@ func (ad OrderController) CreateOrder(w http.ResponseWriter, r *http.Request, p 
 	if Order.Count == 0 {
 		Order.Count = 1
 	}
-	if Box.AvailableBoxes < Order.Count {
-		w.Header().Set("Content-Type", "appliBoxion/json")
-		w.WriteHeader(401)
-		fmt.Fprintf(w, "%s", "Not valid Box Count")
-		return
-	}
+	// if Box.AvailableBoxes < Order.Count {
+	// 	w.Header().Set("Content-Type", "appliBoxion/json")
+	// 	w.WriteHeader(401)
+	// 	fmt.Fprintf(w, "%s", "Not valid Box Count")
+	// 	return
+	// }
 
 	Order.Price = Box.Price * Order.Count * 100
 
