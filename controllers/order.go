@@ -3,7 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-
+	"time"
 	"net/http"
 
 	"../helpers"
@@ -101,12 +101,18 @@ func (ad OrderController) CreateOrder(w http.ResponseWriter, r *http.Request, p 
 	// write struct of admni to DB
 	ad.session.DB("dibs").C("boxes").UpdateId(oid, out)
 	Order.PaymentID = newPay.OrderID
+	Order.CreatedAt =  time.Now().String()
+	Order.BoxDetails =  Box
 	err := ad.session.DB("dibs").C("orders").Insert(Order)
-	ad.session.DB("dibs").C("users").UpdateId(userid, bson.M{
+		uid := bson.ObjectIdHex(userid)
+	err = ad.session.DB("dibs").C("users").UpdateId(uid, bson.M{
 		"$addToSet": bson.M{
-			"orders": Order,
+			"orders": Order.ID,
 		},
 	})
+		if err != nil {
+		println("Order Error: ", err.Error())
+	}
 	res := helpers.ResController{Res: w}
 	pRes := paymentResponse{
 		frame,
