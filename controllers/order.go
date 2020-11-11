@@ -21,6 +21,11 @@ type (
 	}
 )
 
+type paymentResponse struct {
+	Iframe  string
+	orderId string
+}
+
 // NewOrderController ... returns a instance of UserController structure
 func NewOrderController(session *mgo.Session) *OrderController {
 	return &OrderController{session}
@@ -103,14 +108,13 @@ func (ad OrderController) CreateOrder(w http.ResponseWriter, r *http.Request, p 
 		},
 	})
 	res := helpers.ResController{Res: w}
-	output, _ := json.Marshal(struct {
-		iframe  string
-		orderID string
-	}{
+	pRes := paymentResponse{
 		frame,
 		Order.ID.String(),
-	})
+	}
+	output, _ := json.Marshal(&pRes)
 
+	println("OUTPUT: ", string(output))
 	if err != nil {
 		println("Error : ", err.Error())
 		res.SendResponse("Internal Server Error", 504)
