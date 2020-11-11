@@ -23,7 +23,7 @@ type (
 
 type paymentResponse struct {
 	Iframe  string
-	orderId string
+	OrderID bson.ObjectId
 }
 
 // NewOrderController ... returns a instance of UserController structure
@@ -110,7 +110,7 @@ func (ad OrderController) CreateOrder(w http.ResponseWriter, r *http.Request, p 
 	res := helpers.ResController{Res: w}
 	pRes := paymentResponse{
 		frame,
-		Order.ID.String(),
+		Order.ID,
 	}
 	output, _ := json.Marshal(&pRes)
 
@@ -121,7 +121,9 @@ func (ad OrderController) CreateOrder(w http.ResponseWriter, r *http.Request, p 
 		return
 	}
 	// here apply the payment implementation
-	res.SendResponse(string(output), 200)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	fmt.Fprintf(w, "%s", output)
 }
 
 // GetOrder ... creates a new Order resource
@@ -149,7 +151,9 @@ func (ad OrderController) GetOrder(w http.ResponseWriter, r *http.Request, p htt
 	// here apply the payment implementation
 	output, _ := json.Marshal(Order)
 
-	res.SendResponse(string(output), 200)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	fmt.Fprintf(w, "%s", output)
 }
 
 // GetOrders ... creates a new Order resource
@@ -176,5 +180,7 @@ func (ad OrderController) GetOrders(w http.ResponseWriter, r *http.Request, p ht
 	// here apply the payment implementation
 	output, _ := json.Marshal(results)
 
-	res.SendResponse(string(output), 200)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	fmt.Fprintf(w, "%s", output)
 }
