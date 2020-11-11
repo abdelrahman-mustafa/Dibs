@@ -112,7 +112,9 @@ func (ad OrderController) CreateOrder(w http.ResponseWriter, r *http.Request, p 
 	})
 
 	if err != nil {
+		println("Error : ", err.Error())
 		res.SendResponse("Internal Server Error", 504)
+		return
 	}
 	// here apply the payment implementation
 	res.SendResponse(string(output), 200)
@@ -146,19 +148,29 @@ func (ad OrderController) GetOrder(w http.ResponseWriter, r *http.Request, p htt
 	res.SendResponse(string(output), 200)
 }
 
-// //UpdateOrder ... creates a new Order resource
-// func (ad OrderController) UpdateOrder(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-// 	// query := r.URL.Query()
+// GetOrders ... creates a new Order resource
+func (ad OrderController) GetOrders(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
-// 	// Order := &models.Order{}
-// 	// err := ad.session.DB("dibs").C("orders").FindId(oid).One(&Order)
-// 	// res := helpers.ResController{Res: w}
+	// get user id from header
+	userid := p.ByName("userID")
+	fmt.Println("Start Get from id  is ", userid)
 
-// 	// if err != nil {
-// 	// 	res.SendResponse("Internal Server Error", 504)
-// 	// }
-// 	// // here apply the payment implementation
-// 	// output, _ := json.Marshal(Order)
+	user := models.GetUser(userid, ad.session)
+	if user.Username == "" {
+		res := helpers.ResController{Res: w}
+		res.SendResponse("Not Fount", 404)
+		return
+	}
 
-// 	// res.SendResponse(string(output), 200)
-// }
+	var results []bson.M
+	err := ad.session.DB("dibs").C("orders").Find(bson.M{}).All(&results)
+	res := helpers.ResController{Res: w}
+
+	if err != nil {
+		res.SendResponse("Internal Server Error", 504)
+	}
+	// here apply the payment implementation
+	output, _ := json.Marshal(results)
+
+	res.SendResponse(string(output), 200)
+}
